@@ -8,6 +8,11 @@ const userMap = {
     avatar: 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif',
     name: 'Super Admin'
   },
+  loginError: {
+    success: false,
+    errorCode: 10005,
+    message: '账号或者密码错误!'
+  },
   editor: {
     roles: ['editor'],
     token: 'editor',

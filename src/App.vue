@@ -6,6 +6,9 @@
 
 <script>
 export default{
-  name: 'App'
+  name: 'App',
+  created() {
+    this.$i18n.locale = this.$store.getters.language
+  }
 }
 </script>

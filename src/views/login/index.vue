@@ -21,7 +21,7 @@
         />
       </el-form-item>
 
-      <el-form-item prop="password">
+      <el-form-item :error="loginError" prop="password">
         <span class="svg-container">
           <svg-icon icon-class="password" />
         </span>
@@ -41,32 +41,7 @@
       <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">
         {{ $t('login.logIn') }}
       </el-button>
-
-      <div style="position:relative">
-        <div class="tips">
-          <span>{{ $t('login.username') }} : admin</span>
-          <span>{{ $t('login.password') }} : {{ $t('login.any') }}</span>
-        </div>
-        <div class="tips">
-          <span style="margin-right:18px;">
-            {{ $t('login.username') }} : editor
-          </span>
-          <span>{{ $t('login.password') }} : {{ $t('login.any') }}</span>
-        </div>
-
-        <el-button class="thirdparty-button" type="primary" @click="showDialog=true">
-          {{ $t('login.thirdparty') }}
-        </el-button>
-      </div>
     </el-form>
-
-    <el-dialog :title="$t('login.thirdparty')" :visible.sync="showDialog">
-      {{ $t('login.thirdpartyTips') }}
-      <br>
-      <br>
-      <br>
-      <social-sign />
-    </el-dialog>
   </div>
 </template>
 
@@ -95,8 +70,8 @@ export default {
     }
     return {
       loginForm: {
-        username: 'admin',
-        password: '1111111'
+        username: '',
+        password: ''
       },
       loginRules: {
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],
@@ -104,8 +79,8 @@ export default {
       },
       passwordType: 'password',
       loading: false,
-      showDialog: false,
-      redirect: undefined
+      redirect: undefined,
+      loginError: ''
     }
   },
   watch: {
@@ -131,13 +106,15 @@ export default {
       }
     },
     handleLogin() {
+      this.loginError = ''
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true
           this.$store.dispatch('LoginByUsername', this.loginForm).then(() => {
             this.loading = false
             this.$router.push({ path: this.redirect || '/' })
-          }).catch(() => {
+          }).catch((error) => {
+            this.loginError = error
             this.loading = false
           })
         } else {
@@ -145,24 +122,6 @@ export default {
           return false
         }
       })
-    },
-    afterQRScan() {
-      // const hash = window.location.hash.slice(1)
-      // const hashObj = getQueryObject(hash)
-      // const originUrl = window.location.origin
-      // history.replaceState({}, '', originUrl)
-      // const codeMap = {
-      //   wechat: 'code',
-      //   tencent: 'code'
-      // }
-      // const codeName = hashObj[codeMap[this.auth_type]]
-      // if (!codeName) {
-      //   alert('第三方登录失败')
-      // } else {
-      //   this.$store.dispatch('LoginByThirdparty', codeName).then(() => {
-      //     this.$router.push({ path: '/' })
-      //   })
-      // }
     }
   }
 }
@@ -276,11 +235,6 @@ $light_gray:#eee;
     color: $dark_gray;
     cursor: pointer;
     user-select: none;
-  }
-  .thirdparty-button {
-    position: absolute;
-    right: 0;
-    bottom: 6px;
   }
 }
 </style>
