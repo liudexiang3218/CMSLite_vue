@@ -9,7 +9,6 @@ const user = {
     token: getToken(),
     name: '',
     avatar: '',
-    introduction: '',
     roles: [],
     setting: {
       articlePlatform: []
@@ -22,9 +21,6 @@ const user = {
     },
     SET_TOKEN: (state, token) => {
       state.token = token
-    },
-    SET_INTRODUCTION: (state, introduction) => {
-      state.introduction = introduction
     },
     SET_SETTING: (state, setting) => {
       state.setting = setting
@@ -46,15 +42,15 @@ const user = {
   actions: {
     // 用户名登录
     LoginByUsername({ commit }, userInfo) {
-      const username = userInfo.username.trim()
+      const username = userInfo.userName.trim()
       return new Promise((resolve, reject) => {
         loginByUsername(username, userInfo.password).then(response => {
-          const data = response.data
-          if (!data.success) {
-            reject(data.message)
+          const responseData = response.data
+          if (!responseData.success) {
+            reject(responseData.message)
           } else {
-            commit('SET_TOKEN', data.token)
-            setToken(response.data.token)
+            commit('SET_TOKEN', responseData.data.token)
+            setToken(responseData.data.token)
             resolve()
           }
         }).catch(error => {
@@ -71,17 +67,17 @@ const user = {
           if (!response.data) {
             reject('Verification failed, please login again.')
           }
-          const data = response.data
-
-          if (data.roles && data.roles.length > 0) { // 验证返回的roles是否是一个非空数组
-            commit('SET_ROLES', data.roles)
+          debugger
+          const responseData = response.data
+          const user = responseData.data
+          if (user.roles && user.roles.length > 0) { // 验证返回的roles是否是一个非空数组
+            commit('SET_ROLES', user.roles)
           } else {
             reject('getInfo: roles must be a non-null array!')
           }
 
-          commit('SET_NAME', data.name)
-          commit('SET_AVATAR', data.avatar)
-          commit('SET_INTRODUCTION', data.introduction)
+          commit('SET_NAME', user.userName)
+          commit('SET_AVATAR', user.avatar)
           resolve(response)
         }).catch(error => {
           reject(error)
@@ -129,15 +125,16 @@ const user = {
     // 动态修改权限
     ChangeRoles({ commit, dispatch }, role) {
       return new Promise(resolve => {
+        debugger
         commit('SET_TOKEN', role)
         setToken(role)
         getUserInfo(role).then(response => {
-          const data = response.data
-          commit('SET_ROLES', data.roles)
-          commit('SET_NAME', data.name)
-          commit('SET_AVATAR', data.avatar)
-          commit('SET_INTRODUCTION', data.introduction)
-          dispatch('GenerateRoutes', data) // 动态修改权限后 重绘侧边菜单
+          debugger
+          const user = response.data.data
+          commit('SET_ROLES', user.roles)
+          commit('SET_NAME', user.userName)
+          commit('SET_AVATAR', user.avatar)
+          dispatch('GenerateRoutes', user) // 动态修改权限后 重绘侧边菜单
           resolve()
         })
       })
