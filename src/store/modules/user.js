@@ -1,4 +1,5 @@
 import { loginByUsername, logout, getUserInfo } from '@/api/login'
+import { changePassword } from '@/api/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 
 const user = {
@@ -136,6 +137,22 @@ const user = {
           commit('SET_AVATAR', user.avatar)
           dispatch('GenerateRoutes', user) // 动态修改权限后 重绘侧边菜单
           resolve()
+        })
+      })
+    },
+
+    // 修改密码
+    changePassword(data) {
+      return new Promise((resolve, reject) => {
+        changePassword(data.originPassword, data.password).then(response => {
+          const responseData = response.data
+          if (!responseData.success) {
+            reject(responseData.message)
+          } else {
+            resolve()
+          }
+        }).catch(error => {
+          reject(error)
         })
       })
     }

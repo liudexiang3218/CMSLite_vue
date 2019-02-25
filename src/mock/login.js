@@ -17,6 +17,16 @@ const userMap = {
     errorCode: 10005,
     message: '账号或者密码错误!'
   },
+  Success: {
+    success: true,
+    errorCode: 10000,
+    message: ''
+  },
+  Error: {
+    success: false,
+    errorCode: 10001,
+    message: '发生错误'
+  },
   editor: {
     success: true,
     errorCode: 10000,
@@ -43,5 +53,8 @@ export default {
       return false
     }
   },
-  logout: () => 'success'
+  logout: () => 'success',
+  changePassword: config => {
+    return userMap['Error']
+  }
 }

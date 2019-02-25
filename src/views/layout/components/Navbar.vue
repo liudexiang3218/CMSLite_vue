@@ -34,17 +34,21 @@
               {{ $t('navbar.dashboard') }}
             </el-dropdown-item>
           </router-link>
-          <a target="_blank" href="https://github.com/PanJiaChen/vue-element-admin/">
-            <el-dropdown-item>
-              {{ $t('navbar.github') }}
-            </el-dropdown-item>
-          </a>
+          <el-dropdown-item>
+            <span style="display:block;" @click="changePassword">{{ $t('navbar.rePassword') }}</span>
+          </el-dropdown-item>
           <el-dropdown-item divided>
             <span style="display:block;" @click="logout">{{ $t('navbar.logOut') }}</span>
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
     </div>
+    <el-dialog
+      :visible.sync="dialogChangePasswordVisible"
+      title="修改密码"
+      width="30%">
+      <re-password/>
+    </el-dialog>
   </div>
 </template>
 
@@ -58,7 +62,7 @@ import SizeSelect from '@/components/SizeSelect'
 import LangSelect from '@/components/LangSelect'
 import ThemePicker from '@/components/ThemePicker'
 import Search from '@/components/HeaderSearch'
-
+import RePassword from '@/components/User/rePassword'
 export default {
   components: {
     Breadcrumb,
@@ -68,7 +72,13 @@ export default {
     SizeSelect,
     LangSelect,
     ThemePicker,
-    Search
+    Search,
+    RePassword
+  },
+  data() {
+    return {
+      dialogChangePasswordVisible: false
+    }
   },
   computed: {
     ...mapGetters([
@@ -81,6 +91,9 @@ export default {
   methods: {
     toggleSideBar() {
       this.$store.dispatch('toggleSideBar')
+    },
+    changePassword() {
+      this.dialogChangePasswordVisible = true
     },
     logout() {
       this.$store.dispatch('LogOut').then(() => {
