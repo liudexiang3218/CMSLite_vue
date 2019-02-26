@@ -1,18 +1,13 @@
 <template>
   <div>
-    <el-form v-show="visible" ref="ruleForm" :model="ruleForm" :rules="rules" status-icon label-width="100px">
+    <el-form v-show="visible" ref="ruleForm" :rules="rules" :model="ruleForm" status-icon label-width="100px">
       <el-form-item label="原密码" prop="originPassword">
         <el-input v-model="ruleForm.originPassword" type="password" autocomplete="off"/>
       </el-form-item>
-      <el-form-item label="新密码" prop="password">
-        <el-input v-model="ruleForm.password" type="password" autocomplete="off"/>
-      </el-form-item>
-      <el-form-item label="确认密码" prop="checkPassword">
-        <el-input v-model="ruleForm.checkPassword" type="password" autocomplete="off"/>
-      </el-form-item>
+      <check-re-password :form-model="ruleForm"/>
       <el-form-item>
         <el-button :loading="loading" type="primary" @click="submitForm('ruleForm')">提交</el-button>
-        <el-button @click="resetForm('ruleForm')">重置</el-button>
+        <el-button @click="resetForm()">重置</el-button>
       </el-form-item>
     </el-form>
     <span v-show="!visible">
@@ -23,37 +18,18 @@
   </div>
 </template>
 <script>
+import CheckRePassword from '@/components/User/checkRePassword'
 export default {
   name: 'RePassword',
+  components: {
+    CheckRePassword
+  },
   data() {
     var validateOriginPasswordd = (rule, value, callback) => {
       if (value === '') {
         return callback(new Error('原密码不能为空'))
       }
       callback()
-    }
-    var validatePassword = (rule, value, callback) => {
-      if (value === '') {
-        callback(new Error('请输入新密码'))
-      } else {
-        if (value.length < 6) {
-          callback(new Error(this.$t('login.passwordTip')))
-        } else {
-          if (this.ruleForm.checkPassword !== '') {
-            this.$refs.ruleForm.validateField('checkPassword')
-          }
-          callback()
-        }
-      }
-    }
-    var validateCheckPassword = (rule, value, callback) => {
-      if (value === '') {
-        callback(new Error('请再次输入密码'))
-      } else if (value !== this.ruleForm.password) {
-        callback(new Error('两次输入密码不一致!'))
-      } else {
-        callback()
-      }
     }
     return {
       ruleForm: {
@@ -62,12 +38,6 @@ export default {
         originPassword: ''
       },
       rules: {
-        password: [
-          { validator: validatePassword, trigger: 'blur' }
-        ],
-        checkPassword: [
-          { validator: validateCheckPassword, trigger: 'blur' }
-        ],
         originPassword: [
           { validator: validateOriginPasswordd, trigger: 'blur' }
         ]
@@ -100,8 +70,10 @@ export default {
         }
       })
     },
-    resetForm(formName) {
-      this.$refs[formName].resetFields()
+    resetForm() {
+      this.$refs.ruleForm.resetFields()
+      this.visible = true
+      this.loading = false
     }
   }
 }

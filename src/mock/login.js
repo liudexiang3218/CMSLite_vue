@@ -55,6 +55,6 @@ export default {
   },
   logout: () => 'success',
   changePassword: config => {
-    return userMap['Error']
+    return userMap['Success']
   }
 }

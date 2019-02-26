@@ -45,9 +45,10 @@
     </div>
     <el-dialog
       :visible.sync="dialogChangePasswordVisible"
+      :before-close="closeChangePassword"
       title="修改密码"
       width="30%">
-      <re-password/>
+      <re-password ref="rePassword"/>
     </el-dialog>
   </div>
 </template>
@@ -92,14 +93,19 @@ export default {
     toggleSideBar() {
       this.$store.dispatch('toggleSideBar')
     },
-    changePassword() {
-      this.dialogChangePasswordVisible = true
-    },
     logout() {
       this.$store.dispatch('LogOut').then(() => {
         location.reload()// In order to re-instantiate the vue-router object to avoid bugs
       })
+    },
+    changePassword() {
+      this.dialogChangePasswordVisible = true
+    },
+    closeChangePassword(done) {
+      this.$refs.rePassword.resetForm()
+      done()
     }
+
   }
 }
 </script>

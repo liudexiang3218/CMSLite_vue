@@ -364,6 +364,17 @@ export const asyncRouterMap = [
       }
     ]
   },
-
+  {
+    path: '/system',
+    component: Layout,
+    children: [
+      {
+        path: 'user',
+        component: () => import('@/views/user/userTable'),
+        name: 'user',
+        meta: { roles: ['admin'], title: 'user', icon: 'peoples', noCache: true, redirect: 'noredirect' }
+      }
+    ]
+  },
   { path: '*', redirect: '/404', hidden: true }
 ]

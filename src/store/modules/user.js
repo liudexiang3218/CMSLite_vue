@@ -68,7 +68,6 @@ const user = {
           if (!response.data) {
             reject('Verification failed, please login again.')
           }
-          debugger
           const responseData = response.data
           const user = responseData.data
           if (user.roles && user.roles.length > 0) { // 验证返回的roles是否是一个非空数组
@@ -126,11 +125,9 @@ const user = {
     // 动态修改权限
     ChangeRoles({ commit, dispatch }, role) {
       return new Promise(resolve => {
-        debugger
         commit('SET_TOKEN', role)
         setToken(role)
         getUserInfo(role).then(response => {
-          debugger
           const user = response.data.data
           commit('SET_ROLES', user.roles)
           commit('SET_NAME', user.userName)
