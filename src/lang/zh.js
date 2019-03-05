@@ -80,7 +80,7 @@ export default {
     password: '密码',
     any: '随便填',
     usernameTip: '账号格式错误，请重新输入',
-    passwordTip: '密码格式错误，至少需要6位数，请重新输入'
+    passwordTip: '密码格式错误,必须6~16个字符'
   },
   documentation: {
     documentation: '文档',

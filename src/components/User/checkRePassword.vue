@@ -1,16 +1,16 @@
 <template>
   <div>
-    <el-form-item :rules="passwordRules" label="新密码" prop="password">
-      <el-input v-model="formModel.password" type="password" autocomplete="off"/>
-    </el-form-item>
-    <el-form-item ref="checkPassword" :rules="checkPasswordRules" label="确认密码" prop="checkPassword">
-      <el-input v-model="formModel.checkPassword" type="password" autocomplete="off"/>
-    </el-form-item>
+    <password :model="formModel" :rules="passwordRules" label="新密码" prop="password"/>
+    <password ref="checkPassword" :model="formModel" :rules="checkPasswordRules" label="确认新密码" prop="checkPassword"/>
   </div>
 </template>
 <script>
+import Password from '@/components/User/password'
 export default {
   name: 'CheckRePassword',
+  components: {
+    Password
+  },
   props: {
     formModel: {
       type: Object,
@@ -34,7 +34,7 @@ export default {
     }
     var validateCheckPassword = (rule, value, callback) => {
       if (value === '') {
-        callback(new Error('请再次输入密码'))
+        callback(new Error('请再次输入新密码'))
       } else if (value !== this.formModel.password) {
         callback(new Error('两次输入密码不一致!'))
       } else {
@@ -43,10 +43,10 @@ export default {
     }
     return {
       passwordRules: [
-        { validator: validatePassword, trigger: 'blur' }
+        { required: true, validator: validatePassword, trigger: 'blur' }
       ],
       checkPasswordRules: [
-        { validator: validateCheckPassword, trigger: 'blur' }
+        { required: true, validator: validateCheckPassword, trigger: 'blur' }
       ]
     }
   }

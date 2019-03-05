@@ -1,9 +1,7 @@
 <template>
   <div>
-    <el-form v-show="visible" ref="ruleForm" :rules="rules" :model="ruleForm" status-icon label-width="100px">
-      <el-form-item label="原密码" prop="originPassword">
-        <el-input v-model="ruleForm.originPassword" type="password" autocomplete="off"/>
-      </el-form-item>
+    <el-form v-show="visible" ref="ruleForm" :model="ruleForm" label-width="100px">
+      <password :model="ruleForm" :rules="passwordRules" label="原密码" prop="originPassword"/>
       <check-re-password :form-model="ruleForm"/>
       <el-form-item>
         <el-button :loading="loading" type="primary" @click="submitForm('ruleForm')">提交</el-button>
@@ -19,28 +17,27 @@
 </template>
 <script>
 import CheckRePassword from '@/components/User/checkRePassword'
+import Password from '@/components/User/password'
 export default {
   name: 'RePassword',
   components: {
-    CheckRePassword
+    CheckRePassword,
+    Password
   },
   data() {
-    var validateOriginPasswordd = (rule, value, callback) => {
-      if (value === '') {
-        return callback(new Error('原密码不能为空'))
+    const validatePassword = (rule, value, callback) => {
+      if (value.length < 6 || value.length > 16) {
+        callback(new Error(this.$t('login.passwordTip')))
+      } else {
+        callback()
       }
-      callback()
     }
     return {
+      passwordRules: [{ required: true, trigger: 'blur', validator: validatePassword }],
       ruleForm: {
         password: '',
         checkPassword: '',
         originPassword: ''
-      },
-      rules: {
-        originPassword: [
-          { validator: validateOriginPasswordd, trigger: 'blur' }
-        ]
       },
       loading: false,
       visible: true
@@ -50,6 +47,7 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
+          alert(this.ruleForm.originPassword)
           this.loading = true
           this.$store.dispatch('changePassword', this.ruleForm).then(() => {
             this.loading = false
