@@ -1,5 +1,5 @@
 import { loginByUsername, logout, getUserInfo } from '@/api/login'
-import { changePassword } from '@/api/user'
+import { changePassword, addUser } from '@/api/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 
 const user = {
@@ -22,6 +22,7 @@ const user = {
     },
     SET_TOKEN: (state, token) => {
       state.token = token
+      setToken(token)
     },
     SET_SETTING: (state, setting) => {
       state.setting = setting
@@ -51,7 +52,6 @@ const user = {
             reject(responseData.message)
           } else {
             commit('SET_TOKEN', responseData.data.token)
-            setToken(responseData.data.token)
             resolve()
           }
         }).catch(error => {
@@ -64,40 +64,24 @@ const user = {
     GetUserInfo({ commit, state }) {
       return new Promise((resolve, reject) => {
         getUserInfo(state.token).then(response => {
-          // 由于mockjs 不支持自定义状态码只能这样hack
-          if (!response.data) {
+          const responseData = response.data
+          if (!responseData) {
             reject('Verification failed, please login again.')
           }
-          const responseData = response.data
           const user = responseData.data
-          if (user.roles && user.roles.length > 0) { // 验证返回的roles是否是一个非空数组
+          if (user.roles && user.roles.length > 0) {
             commit('SET_ROLES', user.roles)
           } else {
             reject('getInfo: roles must be a non-null array!')
           }
-
           commit('SET_NAME', user.userName)
           commit('SET_AVATAR', user.avatar)
-          resolve(response)
+          resolve(responseData)
         }).catch(error => {
           reject(error)
         })
       })
     },
-
-    // 第三方验证登录
-    // LoginByThirdparty({ commit, state }, code) {
-    //   return new Promise((resolve, reject) => {
-    //     commit('SET_CODE', code)
-    //     loginByThirdparty(state.status, state.email, state.code).then(response => {
-    //       commit('SET_TOKEN', response.data.token)
-    //       setToken(response.data.token)
-    //       resolve()
-    //     }).catch(error => {
-    //       reject(error)
-    //     })
-    //   })
-    // },
 
     // 登出
     LogOut({ commit, state }) {
@@ -117,6 +101,7 @@ const user = {
     FedLogOut({ commit }) {
       return new Promise(resolve => {
         commit('SET_TOKEN', '')
+        commit('SET_ROLES', [])
         removeToken()
         resolve()
       })
@@ -139,7 +124,7 @@ const user = {
     },
 
     // 修改密码
-    changePassword(data) {
+    changePassword(context, data) {
       return new Promise((resolve, reject) => {
         changePassword(data.originPassword, data.password).then(response => {
           const responseData = response.data
@@ -147,6 +132,22 @@ const user = {
             reject(responseData.message)
           } else {
             resolve()
+          }
+        }).catch(error => {
+          reject(error)
+        })
+      })
+    },
+
+    // 添加用户
+    createUser(context, userInfo) {
+      return new Promise((resolve, reject) => {
+        addUser(userInfo).then(response => {
+          const responseData = response.data
+          if (!responseData.success) {
+            reject(responseData.message)
+          } else {
+            resolve(responseData.data)
           }
         }).catch(error => {
           reject(error)

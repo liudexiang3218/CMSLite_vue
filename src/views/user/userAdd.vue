@@ -1,8 +1,13 @@
 <template>
   <div>
-    <el-form v-show="visible" ref="ruleForm" :model="ruleForm" label-width="100px">
-      <password :model="ruleForm" :rules="passwordRules" label="原密码" prop="originPassword"/>
+    <el-form v-show="visible" ref="ruleForm" :rules="formRules" :model="ruleForm" label-width="100px">
+      <el-form-item :label="$t('login.username')" prop="userName">
+        <el-input v-model="ruleForm.userName"/>
+      </el-form-item>
       <check-re-password :form-model="ruleForm"/>
+      <el-form-item label="昵称" prop="nick">
+        <el-input v-model="ruleForm.nick"/>
+      </el-form-item>
       <el-form-item>
         <el-button :loading="loading" type="primary" @click="submitForm('ruleForm')">提交</el-button>
         <el-button @click="resetForm()">重置</el-button>
@@ -10,34 +15,44 @@
     </el-form>
     <span v-show="!visible">
       <p class="warn-content">
-        密码已修改成功，请牢记您的新密码！
+        账号{{ ruleForm.userName }}已添加成功，密码为:{{ ruleForm.password }}
       </p>
     </span>
   </div>
 </template>
 <script>
+import { validUsername } from '@/utils/validate'
 import CheckRePassword from '@/components/User/checkRePassword'
-import Password from '@/components/User/password'
 export default {
-  name: 'RePassword',
+  name: 'UserAdd',
   components: {
-    CheckRePassword,
-    Password
+    CheckRePassword
   },
   data() {
-    const validatePassword = (rule, value, callback) => {
-      if (value.length < 6 || value.length > 16) {
-        callback(new Error(this.$t('login.passwordTip')))
+    const validateUsername = (rule, value, callback) => {
+      if (!validUsername(value)) {
+        callback(new Error(this.$t('login.usernameTip')))
+      } else {
+        callback()
+      }
+    }
+    const validateNick = (rule, value, callback) => {
+      if (value.length < 0) {
+        callback(new Error('昵称不能为空!'))
       } else {
         callback()
       }
     }
     return {
-      passwordRules: [{ required: true, trigger: 'blur', validator: validatePassword }],
+      formRules: {
+        userName: [{ required: true, trigger: 'blur', validator: validateUsername }],
+        nick: [{ required: true, trigger: 'blur', validator: validateNick }]
+      },
       ruleForm: {
         password: '',
         checkPassword: '',
-        originPassword: ''
+        userName: '',
+        nick: ''
       },
       loading: false,
       visible: true
@@ -48,17 +63,13 @@ export default {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           this.loading = true
-          this.$store.dispatch('changePassword', this.ruleForm).then(() => {
+          this.$store.dispatch('createUser', this.ruleForm).then(() => {
             this.loading = false
             this.visible = false
           }).catch((error) => {
+            console.log(error)
             this.loading = false
-            this.$message({
-              message: error,
-              type: 'error',
-              showClose: true,
-              duration: 5000
-            })
+            return false
           })
         } else {
           console.log('error submit!!')

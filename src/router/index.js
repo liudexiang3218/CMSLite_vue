@@ -105,12 +105,12 @@ export const constantRouterMap = [
   }
 ]
 
-export default new Router({
+const router = new Router({
   mode: 'history', // require service support
   scrollBehavior: () => ({ y: 0 }),
   routes: constantRouterMap
 })
-
+export default router
 export const asyncRouterMap = [
   {
     path: '/permission',

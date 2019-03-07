@@ -12,3 +12,18 @@ export function changePassword(originPassword, password) {
   })
 }
 
+export function addUser(data) {
+  return request({
+    url: '/user/add',
+    method: 'post',
+    data
+  })
+}
+export function getUsers(data) {
+  return request({
+    url: '/user/list',
+    method: 'post',
+    data
+  })
+}
+
