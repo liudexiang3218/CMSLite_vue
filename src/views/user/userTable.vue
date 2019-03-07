@@ -8,27 +8,34 @@
     <el-table
       v-loading="listLoading"
       :data="list"
+      :default-sort = "{prop: 'addTime', order: 'descending'}"
       border
       fit
       highlight-current-row
-      style="width: 100%;"
+      style="width: 100%"
+      row-key="id"
+      stripe
+      @sort-change="sortChange"
     >
       <el-table-column
         type="selection"
         width="55px"/>
-      <el-table-column :label="$t('login.username')" prop="userName" align="center" width="110px">
+      <el-table-column
+        :index="indexMethod"
+        type="index"/>
+      <el-table-column :label="$t('login.username')" sortable="custom" prop="userName" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.userName }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.date')" width="150px" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.addTime | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="昵称" width="110px" align="center">
+      <el-table-column label="昵称" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.nick }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column :label="$t('table.date')" width="150px" sortable="custom" prop="addTime" align="center">
+        <template slot-scope="scope">
+          <span>{{ scope.row.addTime | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
       <el-table-column :label="$t('table.status')" class-name="status-col" width="100">
@@ -38,7 +45,13 @@
       </el-table-column>
       <el-table-column :label="$t('table.actions')" align="center" width="230" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <el-button type="primary" size="mini">{{ $t('table.edit') }}</el-button>
+          <el-button
+            size="mini"
+            @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+          <el-button
+            size="mini"
+            type="danger"
+            @click="handleDelete(scope.$index, scope.row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -64,13 +77,13 @@ export default {
     return {
       list: null,
       total: 0,
-      listLoading: true,
+      listLoading: false,
       listQuery: {
         page: 1,
         limit: 20,
         search: undefined,
         type: undefined,
-        sort: '+id'
+        sort: '+addTime'
       },
       createUserFormVisible: false
     }
@@ -84,38 +97,54 @@ export default {
       this.getList()
     },
     getList() {
-      getUsers(this.listQuery).then(response => {
-        debugger
-        const responseData = response.data
-        if (!responseData.success) {
-          Message({
-            message: responseData.message,
-            type: 'error',
-            duration: 5 * 1000,
-            showClose: true
-          })
-        } else {
-          this.total = responseData.data.total
-          this.list = responseData.data.result
-        }
-        this.listLoading = false
-      }).catch(error => {
-        Message({
-          message: error,
-          type: 'error',
-          duration: 5 * 1000,
-          showClose: true
+      debugger
+      if (!this.listLoading) {
+        this.listLoading = true
+        getUsers(this.listQuery).then(response => {
+          this.listLoading = false
+          if (response.success) {
+            this.total = response.data.total
+            this.list = response.data.result
+          }
+        }).catch(error => {
+          this.listLoading = false
+          if (!error.success && error.errorCode) {
+            if (error.errorCode.substr(0, 1) !== '1') {
+              Message({
+                message: error.message,
+                type: 'error',
+                duration: 5 * 1000,
+                showClose: true
+              })
+            }
+          }
         })
-        this.listLoading = false
-      })
+      }
     },
     handleCreate() {
       this.createUserFormVisible = true
     },
+    handleDelete(index, row) {
+      console.log(index, row)
+    },
+    handleEdit(index, row) {
+      console.log(index, row)
+    },
     closeAddUser(done) {
       this.createUserFormVisible = false
-      // this.$refs.addUser.resetForm()
       done()
+    },
+    indexMethod(index) {
+      return (this.listQuery.page - 1) * this.listQuery.limit + index + 1
+    },
+    sortChange(data) {
+      const { prop, order } = data
+      if (order === 'ascending') {
+        this.listQuery.sort = '-' + prop
+      } else {
+        this.listQuery.sort = '+' + prop
+      }
+      this.handleFilter()
     }
   }
 }

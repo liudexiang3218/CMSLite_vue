@@ -1,12 +1,12 @@
 <template>
   <div>
     <el-form v-show="visible" ref="ruleForm" :rules="formRules" :model="ruleForm" label-width="100px">
-      <el-form-item :label="$t('login.username')" prop="userName">
-        <el-input v-model="ruleForm.userName"/>
+      <el-form-item :error="userNameError" :label="$t('login.username')" prop="userName">
+        <el-input v-model="ruleForm.userName" maxlength="16" minlength="6"/>
       </el-form-item>
       <check-re-password :form-model="ruleForm"/>
       <el-form-item label="昵称" prop="nick">
-        <el-input v-model="ruleForm.nick"/>
+        <el-input v-model="ruleForm.nick" maxlength="20" minlength="1"/>
       </el-form-item>
       <el-form-item>
         <el-button :loading="loading" type="primary" @click="submitForm('ruleForm')">提交</el-button>
@@ -23,6 +23,7 @@
 <script>
 import { validUsername } from '@/utils/validate'
 import CheckRePassword from '@/components/User/checkRePassword'
+import { Message } from 'element-ui'
 export default {
   name: 'UserAdd',
   components: {
@@ -55,7 +56,8 @@ export default {
         nick: ''
       },
       loading: false,
-      visible: true
+      visible: true,
+      userNameError: ''
     }
   },
   methods: {
@@ -69,16 +71,30 @@ export default {
           }).catch((error) => {
             console.log(error)
             this.loading = false
+            if (!error.sucess && error.errorCode) {
+              switch (error.errorCode) {
+                case 20001:
+                  this.userNameError = error.message
+                  break
+                default :
+                  Message({
+                    message: error.message,
+                    type: 'error',
+                    duration: 5 * 1000,
+                    showClose: true
+                  })
+              }
+            }
             return false
           })
         } else {
-          console.log('error submit!!')
           this.loading = false
           return false
         }
       })
     },
     resetForm() {
+      this.userNameError = ''
       this.$refs.ruleForm.resetFields()
       this.visible = true
       this.loading = false

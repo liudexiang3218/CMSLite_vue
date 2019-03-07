@@ -47,11 +47,10 @@ const user = {
       const username = userInfo.userName.trim()
       return new Promise((resolve, reject) => {
         loginByUsername(username, userInfo.password).then(response => {
-          const responseData = response.data
-          if (!responseData.success) {
-            reject(responseData.message)
+          if (!response.success) {
+            reject(response.message)
           } else {
-            commit('SET_TOKEN', responseData.data.token)
+            commit('SET_TOKEN', response.data.token)
             resolve()
           }
         }).catch(error => {
@@ -64,11 +63,10 @@ const user = {
     GetUserInfo({ commit, state }) {
       return new Promise((resolve, reject) => {
         getUserInfo(state.token).then(response => {
-          const responseData = response.data
-          if (!responseData) {
+          if (!response) {
             reject('Verification failed, please login again.')
           }
-          const user = responseData.data
+          const user = response.data
           if (user.roles && user.roles.length > 0) {
             commit('SET_ROLES', user.roles)
           } else {
@@ -76,7 +74,7 @@ const user = {
           }
           commit('SET_NAME', user.userName)
           commit('SET_AVATAR', user.avatar)
-          resolve(responseData)
+          resolve(response)
         }).catch(error => {
           reject(error)
         })
@@ -113,7 +111,7 @@ const user = {
         commit('SET_TOKEN', role)
         setToken(role)
         getUserInfo(role).then(response => {
-          const user = response.data.data
+          const user = response.data
           commit('SET_ROLES', user.roles)
           commit('SET_NAME', user.userName)
           commit('SET_AVATAR', user.avatar)
@@ -127,9 +125,8 @@ const user = {
     changePassword(context, data) {
       return new Promise((resolve, reject) => {
         changePassword(data.originPassword, data.password).then(response => {
-          const responseData = response.data
-          if (!responseData.success) {
-            reject(responseData.message)
+          if (!response.success) {
+            reject(response.message)
           } else {
             resolve()
           }
@@ -143,11 +140,10 @@ const user = {
     createUser(context, userInfo) {
       return new Promise((resolve, reject) => {
         addUser(userInfo).then(response => {
-          const responseData = response.data
-          if (!responseData.success) {
-            reject(responseData.message)
+          if (!response.success) {
+            reject(response.message)
           } else {
-            resolve(responseData.data)
+            resolve(response.data)
           }
         }).catch(error => {
           reject(error)

@@ -41,6 +41,11 @@ service.interceptors.response.use(
       }
     }
     if (responseData.errorCode !== 10000) {
+      debugger
+      // 1开头的errorCode为系统级别错误，统一提示错误信息。其他为应用业务级别错误,业务代码自行处理
+      if (responseData.errorCode.substr(0, 1) !== '1') {
+        return Promise.reject(responseData)
+      }
       switch (responseData.errorCode) {
         case 10003:
           router.push({
@@ -55,13 +60,12 @@ service.interceptors.response.use(
             duration: 5 * 1000,
             showClose: true
           })
+          return Promise.reject(responseData)
       }
     }
-
-    return response
+    return Promise.resolve(responseData)
   },
   error => {
-    debugger
     if (error.response) {
       switch (error.response.status) {
         case 401:
@@ -78,7 +82,7 @@ service.interceptors.response.use(
             showClose: true
           })
       }
-      return Promise.resolve(error)
+      return Promise.reject(error)
     } else {
       console.log('err' + error) // for debug
       Message({
