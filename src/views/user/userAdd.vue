@@ -8,6 +8,12 @@
       <el-form-item label="昵称" prop="nick">
         <el-input v-model="ruleForm.nick" maxlength="20" minlength="1"/>
       </el-form-item>
+      <el-form-item label="角色" prop="roles">
+        <el-checkbox-group v-model="ruleForm.roles">
+          <el-checkbox key="admin" label="admin">管理者</el-checkbox>
+          <el-checkbox key="user" label="user">普通用户</el-checkbox>
+        </el-checkbox-group>
+      </el-form-item>
       <el-form-item>
         <el-button :loading="loading" type="primary" @click="submitForm('ruleForm')">提交</el-button>
         <el-button @click="resetForm()">重置</el-button>
@@ -38,8 +44,15 @@ export default {
       }
     }
     const validateNick = (rule, value, callback) => {
-      if (value.length < 0) {
+      if (value.length < 1) {
         callback(new Error('昵称不能为空!'))
+      } else {
+        callback()
+      }
+    }
+    const validateRoles = (rule, value, callback) => {
+      if (value.length < 1) {
+        callback(new Error('角色是必选项'))
       } else {
         callback()
       }
@@ -47,13 +60,15 @@ export default {
     return {
       formRules: {
         userName: [{ required: true, trigger: 'blur', validator: validateUsername }],
-        nick: [{ required: true, trigger: 'blur', validator: validateNick }]
+        nick: [{ required: true, trigger: 'blur', validator: validateNick }],
+        roles: [{ required: true, trigger: 'blur', validator: validateRoles }]
       },
       ruleForm: {
         password: '',
         checkPassword: '',
         userName: '',
-        nick: ''
+        nick: '',
+        roles: []
       },
       loading: false,
       visible: true,
@@ -64,6 +79,7 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
+          debugger
           this.loading = true
           this.$store.dispatch('createUser', this.ruleForm).then(() => {
             this.loading = false

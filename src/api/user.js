@@ -22,6 +22,13 @@ export function deleteUsers(data) {
     data
   })
 }
+export function unDeleteUsers(data) {
+  return request({
+    url: '/user/undel',
+    method: 'post',
+    data
+  })
+}
 export function updateUser(data) {
   return request({
     url: '/user/update',

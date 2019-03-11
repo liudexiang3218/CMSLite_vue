@@ -1,12 +1,11 @@
 <template>
-  <div class="app-container">
+  <div v-loading="listLoading" class="app-container">
     <div class="filter-container">
       <el-input :placeholder="$t('login.username')" v-model="listQuery.search" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter"/>
       <el-button class="filter-item" type="primary" icon="el-icon-search" @click="getList">{{ $t('table.search') }}</el-button>
       <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">{{ $t('table.add') }}</el-button>
     </div>
     <el-table
-      v-loading="listLoading"
       :data="list"
       :default-sort = "{prop: 'addTime', order: 'descending'}"
       border
@@ -33,6 +32,11 @@
           <span>{{ scope.row.nick }}</span>
         </template>
       </el-table-column>
+      <el-table-column label="角色" align="center">
+        <template slot-scope="scope">
+          <span>{{ showRoles(scope.row) }}</span>
+        </template>
+      </el-table-column>
       <el-table-column :label="$t('table.date')" width="150px" sortable="custom" prop="addTime" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.addTime | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
@@ -45,13 +49,21 @@
       </el-table-column>
       <el-table-column :label="$t('table.actions')" align="center" width="230" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <el-button
-            size="mini"
-            @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-          <el-button
-            size="mini"
-            type="danger"
-            @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+          <div v-loading="scope.row.isLoading">
+            <el-button
+              size="mini"
+              @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+            <el-button
+              v-if="!scope.row.del"
+              size="mini"
+              type="danger"
+              @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+            <el-button
+              v-if="scope.row.del"
+              size="mini"
+              type="warning"
+              @click="handleUnDelete(scope.$index, scope.row)">恢复</el-button>
+          </div>
         </template>
       </el-table-column>
     </el-table>
@@ -68,8 +80,8 @@
 <script>
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
 import AddUser from '@/views/user/userAdd'
-import { getUsers } from '@/api/user'
-import { Message } from 'element-ui'
+import { getUsers, deleteUsers, unDeleteUsers } from '@/api/user'
+import { bisError } from '@/api/util'
 export default {
   name: 'UserTable',
   components: { Pagination, AddUser },
@@ -82,7 +94,6 @@ export default {
         page: 1,
         limit: 20,
         search: undefined,
-        type: undefined,
         sort: '+addTime'
       },
       createUserFormVisible: false
@@ -92,32 +103,40 @@ export default {
     this.getList()
   },
   methods: {
+    showRoles(row) {
+      const roles = []
+      row.roles.forEach((element, index) => {
+        switch (element) {
+          case 'admin':
+            roles[index] = '管理者'
+            break
+          case 'user':
+            roles[index] = '普通用户'
+        }
+      })
+      return roles.join(',')
+    },
     handleFilter() {
       this.listQuery.page = 1
       this.getList()
     },
     getList() {
-      debugger
       if (!this.listLoading) {
         this.listLoading = true
         getUsers(this.listQuery).then(response => {
           this.listLoading = false
           if (response.success) {
             this.total = response.data.total
+            if (response.data.result) {
+              response.data.result.forEach(element => {
+                element.isLoading = false
+              })
+            }
             this.list = response.data.result
           }
         }).catch(error => {
           this.listLoading = false
-          if (!error.success && error.errorCode) {
-            if (error.errorCode.substr(0, 1) !== '1') {
-              Message({
-                message: error.message,
-                type: 'error',
-                duration: 5 * 1000,
-                showClose: true
-              })
-            }
-          }
+          bisError(error)
         })
       }
     },
@@ -125,7 +144,52 @@ export default {
       this.createUserFormVisible = true
     },
     handleDelete(index, row) {
-      console.log(index, row)
+      this.$confirm('请确认是否要执行删除' + row.userName + '账号, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        row.isLoading = true
+        deleteUsers([row.id]).then(response => {
+          row.isLoading = false
+          if (response.success) {
+            row.del = true
+            this.$message({
+              message: '删除成功',
+              type: 'success',
+              duration: 5 * 1000,
+              showClose: true
+            })
+          }
+        }).catch(error => {
+          bisError(error)
+          row.isLoading = false
+        })
+      })
+    },
+    handleUnDelete(index, row) {
+      this.$confirm('请确认是否要执行恢复' + row.userName + '账号, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        row.isLoading = true
+        unDeleteUsers([row.id]).then(response => {
+          row.isLoading = false
+          if (response.success) {
+            row.del = false
+            this.$message({
+              message: '恢复成功',
+              type: 'success',
+              duration: 5 * 1000,
+              showClose: true
+            })
+          }
+        }).catch(error => {
+          bisError(error)
+          row.isLoading = false
+        })
+      })
     },
     handleEdit(index, row) {
       console.log(index, row)

@@ -1,7 +1,11 @@
 import axios from 'axios'
 import { Message } from 'element-ui'
+import { bisError } from '@/api/util'
 import store from '@/store'
 import router from '@/router'
+import NProgress from 'nprogress' // progress bar
+import 'nprogress/nprogress.css'// progress bar style
+NProgress.configure({ showSpinner: false })// NProgress Configuration
 // create an axios instance
 const service = axios.create({
   baseURL: process.env.BASE_API, // api 的 base_url
@@ -11,6 +15,7 @@ const service = axios.create({
 // request interceptor
 service.interceptors.request.use(
   config => {
+    NProgress.start() // start progress bar
     if (store.getters.token) {
       config.headers['XAuthToken'] = store.getters.token
     }
@@ -19,6 +24,7 @@ service.interceptors.request.use(
   error => {
     // Do something with request error
     console.log(error) // for debug
+    NProgress.done() // finish progress bar
     Message({
       message: error,
       type: 'error',
@@ -32,6 +38,7 @@ service.interceptors.request.use(
 // response interceptor
 service.interceptors.response.use(
   response => {
+    NProgress.done() // finish progress bar
     const responseData = response.data
     if (response.headers.XAuthToken) {
       store.commit('SET_TOKEN', response.headers.XAuthToken)
@@ -43,7 +50,7 @@ service.interceptors.response.use(
     if (responseData.errorCode !== 10000) {
       debugger
       // 1开头的errorCode为系统级别错误，统一提示错误信息。其他为应用业务级别错误,业务代码自行处理
-      if (responseData.errorCode.substr(0, 1) !== '1') {
+      if (responseData.errorCode > 19999) {
         return Promise.reject(responseData)
       }
       switch (responseData.errorCode) {
@@ -54,18 +61,14 @@ service.interceptors.response.use(
           })
           break
         default:
-          Message({
-            message: responseData.errorCode + ' ' + responseData.message,
-            type: 'error',
-            duration: 5 * 1000,
-            showClose: true
-          })
+          bisError(responseData)
           return Promise.reject(responseData)
       }
     }
     return Promise.resolve(responseData)
   },
   error => {
+    NProgress.done() // finish progress bar
     if (error.response) {
       switch (error.response.status) {
         case 401:
