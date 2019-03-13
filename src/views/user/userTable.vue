@@ -37,7 +37,7 @@
           <span>{{ showRoles(scope.row) }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.date')" width="150px" sortable="custom" prop="addTime" align="center">
+      <el-table-column label="添加时间" width="150px" sortable="custom" prop="addTime" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.addTime | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
@@ -71,20 +71,23 @@
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList"/>
 
     <el-dialog v-if="createUserFormVisible" :before-close="closeAddUser" visible title="创建用户">
-      <add-user/>
+      <user-add/>
     </el-dialog>
-
+    <el-dialog v-if="editUserFormVisible" :before-close="closeEditUser" visible title="修改用户">
+      <user-edit :id="editForm.id" :nick="editForm.nick" :roles="editForm.roles" />
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
-import AddUser from '@/views/user/userAdd'
+import UserAdd from '@/views/user/userAdd'
+import UserEdit from '@/views/user/userEdit'
 import { getUsers, deleteUsers, unDeleteUsers } from '@/api/user'
 import { bisError } from '@/api/util'
 export default {
   name: 'UserTable',
-  components: { Pagination, AddUser },
+  components: { Pagination, UserAdd, UserEdit },
   data() {
     return {
       list: null,
@@ -96,7 +99,14 @@ export default {
         search: undefined,
         sort: '+addTime'
       },
-      createUserFormVisible: false
+      createUserFormVisible: false,
+      editUserFormVisible: false,
+      editForm:
+      {
+        id: 0,
+        nick: '',
+        roles: []
+      }
     }
   },
   created() {
@@ -192,7 +202,18 @@ export default {
       })
     },
     handleEdit(index, row) {
+      this.editForm.id = row.id
+      this.editForm.nick = row.nick
+      this.editForm.roles = row.roles
+      this.editUserFormVisible = true
       console.log(index, row)
+    },
+    closeEditUser(done) {
+      this.editForm.id = 0
+      this.editForm.nick = ''
+      this.editForm.roles = []
+      this.editUserFormVisible = false
+      done()
     },
     closeAddUser(done) {
       this.createUserFormVisible = false

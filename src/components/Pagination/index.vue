@@ -68,6 +68,7 @@ export default {
         return this.limit
       },
       set(val) {
+        if (val * this.page > this.total) { this.$emit('update:page', 1) }
         this.$emit('update:limit', val)
       }
     }

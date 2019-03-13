@@ -1,5 +1,5 @@
 import { loginByUsername, logout, getUserInfo } from '@/api/login'
-import { changePassword, addUser } from '@/api/user'
+import { changePassword, addUser, updateUser } from '@/api/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 
 const user = {
@@ -140,6 +140,19 @@ const user = {
     createUser(context, userInfo) {
       return new Promise((resolve, reject) => {
         addUser(userInfo).then(response => {
+          if (!response.success) {
+            reject(response.message)
+          } else {
+            resolve(response.data)
+          }
+        }).catch(error => {
+          reject(error)
+        })
+      })
+    },
+    editUser(context, userInfo) {
+      return new Promise((resolve, reject) => {
+        updateUser(userInfo).then(response => {
           if (!response.success) {
             reject(response.message)
           } else {

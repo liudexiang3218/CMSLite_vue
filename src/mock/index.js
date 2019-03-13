@@ -19,10 +19,10 @@ Mock.XHR.prototype.send = function() {
 // })
 
 // 登录相关
-Mock.mock(/\/user\/login/, 'post', loginAPI.loginByUsername)
+// Mock.mock(/\/user\/login/, 'post', loginAPI.loginByUsername)
 Mock.mock(/\/login\/logout/, 'post', loginAPI.logout)
-Mock.mock(/\/user\/userinfo/, 'get', loginAPI.getUserInfo)
-Mock.mock(/\/user\/changepassword/, 'post', loginAPI.changePassword)
+// Mock.mock(/\/user\/userinfo/, 'get', loginAPI.getUserInfo)
+// Mock.mock(/\/user\/changepassword/, 'post', loginAPI.changePassword)
 // 文章相关
 Mock.mock(/\/article\/list/, 'get', articleAPI.getList)
 Mock.mock(/\/article\/detail/, 'get', articleAPI.getArticle)

@@ -1,5 +1,5 @@
 <template>
-  <el-form-item ref="password" :rules="rules" :label="label" :prop="prop">
+  <el-form-item ref="password" :rules="rules" :label="label" :error="error" :prop="prop">
     <el-input
       v-model="model[prop]"
       :type="passwordType"
@@ -25,6 +25,10 @@ export default {
     label: {
       type: String,
       default: '密码'
+    },
+    error: {
+      type: String,
+      default: ''
     },
     placeholder: {
       type: String,
