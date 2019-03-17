@@ -1,6 +1,10 @@
 <template>
   <div>
     <el-form v-show="visible" ref="ruleForm" :rules="formRules" :model="ruleForm" label-width="100px">
+      <el-form-item :error="userNameError" :label="$t('login.username')" prop="userName">
+        <el-input v-model="ruleForm.userName" maxlength="16" minlength="6"/>
+      </el-form-item>
+      <check-re-password :form-model="ruleForm"/>
       <el-form-item label="昵称" prop="nick">
         <el-input v-model="ruleForm.nick" maxlength="20" minlength="1"/>
       </el-form-item>
@@ -17,33 +21,28 @@
     </el-form>
     <span v-show="!visible">
       <p class="warn-content">
-        修改成功
+        账号{{ ruleForm.userName }}已添加成功，密码为:{{ ruleForm.password }}
       </p>
     </span>
   </div>
 </template>
 <script>
+import { validUsername } from '@/utils/validate'
+import CheckRePassword from '@/components/User/checkRePassword'
 import { Message } from 'element-ui'
 export default {
-  name: 'UserEdit',
-  props: {
-    id: {
-      required: true,
-      type: String,
-      default: '0'
-    },
-    nick: {
-      type: String,
-      default: ''
-    },
-    roles: {
-      type: Array,
-      default() {
-        return []
-      }
-    }
+  name: 'UserAdd',
+  components: {
+    CheckRePassword
   },
   data() {
+    const validateUsername = (rule, value, callback) => {
+      if (!validUsername(value)) {
+        callback(new Error(this.$t('login.usernameTip')))
+      } else {
+        callback()
+      }
+    }
     const validateNick = (rule, value, callback) => {
       if (value.length < 1) {
         callback(new Error('昵称不能为空!'))
@@ -60,24 +59,29 @@ export default {
     }
     return {
       formRules: {
+        userName: [{ required: true, trigger: 'blur', validator: validateUsername }],
         nick: [{ required: true, trigger: 'blur', validator: validateNick }],
         roles: [{ required: true, trigger: 'blur', validator: validateRoles }]
       },
       ruleForm: {
-        id: this.id,
-        nick: this.nick,
-        roles: this.roles
+        password: '',
+        checkPassword: '',
+        userName: '',
+        nick: '',
+        roles: []
       },
       loading: false,
-      visible: true
+      visible: true,
+      userNameError: ''
     }
   },
   methods: {
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
+          this.userNameError = ''
           this.loading = true
-          this.$store.dispatch('editUser', this.ruleForm).then(() => {
+          this.$store.dispatch('createUser', this.ruleForm).then(() => {
             this.loading = false
             this.visible = false
           }).catch((error) => {
@@ -85,6 +89,9 @@ export default {
             this.loading = false
             if (!error.sucess && error.errorCode) {
               switch (error.errorCode) {
+                case 20002:
+                  this.userNameError = error.message
+                  break
                 default :
                   Message({
                     message: error.message,
@@ -103,6 +110,7 @@ export default {
       })
     },
     resetForm() {
+      this.userNameError = ''
       this.$refs.ruleForm.resetFields()
       this.visible = true
       this.loading = false

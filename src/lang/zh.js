@@ -64,7 +64,10 @@ export default {
     clipboardDemo: 'Clipboard',
     i18n: '国际化',
     externalLink: '外链',
-    user: '用户管理'
+    user: '用户管理',
+    manage: '产品管理',
+    products: '产品列表',
+    catalog: '产品分类'
   },
   navbar: {
     logOut: '退出登录',

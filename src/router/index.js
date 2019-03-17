@@ -246,73 +246,6 @@ export const asyncRouterMap = [
       }
     ]
   },
-
-  {
-    path: '/excel',
-    component: Layout,
-    redirect: '/excel/export-excel',
-    name: 'Excel',
-    meta: {
-      title: 'excel',
-      icon: 'excel'
-    },
-    children: [
-      {
-        path: 'export-excel',
-        component: () => import('@/views/excel/exportExcel'),
-        name: 'ExportExcel',
-        meta: { title: 'exportExcel' }
-      },
-      {
-        path: 'export-selected-excel',
-        component: () => import('@/views/excel/selectExcel'),
-        name: 'SelectExcel',
-        meta: { title: 'selectExcel' }
-      },
-      {
-        path: 'upload-excel',
-        component: () => import('@/views/excel/uploadExcel'),
-        name: 'UploadExcel',
-        meta: { title: 'uploadExcel' }
-      }
-    ]
-  },
-
-  {
-    path: '/zip',
-    component: Layout,
-    redirect: '/zip/download',
-    alwaysShow: true,
-    meta: { title: 'zip', icon: 'zip' },
-    children: [
-      {
-        path: 'download',
-        component: () => import('@/views/zip/index'),
-        name: 'ExportZip',
-        meta: { title: 'exportZip' }
-      }
-    ]
-  },
-
-  {
-    path: '/pdf',
-    component: Layout,
-    redirect: '/pdf/index',
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/pdf/index'),
-        name: 'PDF',
-        meta: { title: 'pdf', icon: 'pdf' }
-      }
-    ]
-  },
-  {
-    path: '/pdf/download',
-    component: () => import('@/views/pdf/download'),
-    hidden: true
-  },
-
   {
     path: '/theme',
     component: Layout,
@@ -326,34 +259,6 @@ export const asyncRouterMap = [
       }
     ]
   },
-
-  {
-    path: '/clipboard',
-    component: Layout,
-    redirect: 'noredirect',
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/clipboard/index'),
-        name: 'ClipboardDemo',
-        meta: { title: 'clipboardDemo', icon: 'clipboard' }
-      }
-    ]
-  },
-
-  {
-    path: '/i18n',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/i18n-demo/index'),
-        name: 'I18n',
-        meta: { title: 'i18n', icon: 'international' }
-      }
-    ]
-  },
-
   {
     path: 'external-link',
     component: Layout,
@@ -373,6 +278,25 @@ export const asyncRouterMap = [
         component: () => import('@/views/user/userTable'),
         name: 'user',
         meta: { roles: ['admin'], title: 'user', icon: 'peoples', noCache: true, redirect: 'noredirect' }
+      }
+    ]
+  },
+  {
+    path: '/product',
+    component: Layout,
+    meta: { title: 'manage', icon: 'component' },
+    children: [
+      {
+        path: 'list',
+        component: () => import('@/views/product/listTable'),
+        name: 'products',
+        meta: { roles: ['admin'], title: 'products', icon: 'list', noCache: true, redirect: 'noredirect' }
+      },
+      {
+        path: 'catalog',
+        component: () => import('@/views/product/catalogTable'),
+        name: 'catalog',
+        meta: { roles: ['admin'], title: 'catalog', icon: 'tree', noCache: true, redirect: 'noredirect' }
       }
     ]
   },

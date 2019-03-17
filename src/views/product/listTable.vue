@@ -1,7 +1,7 @@
 <template>
   <div v-loading="listLoading" class="app-container">
     <div class="filter-container">
-      <el-input :placeholder="$t('login.username')" v-model="listQuery.andUserNameEqualTo" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter"/>
+      <el-input :placeholder="$t('login.username')" v-model="listQuery.search" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter"/>
       <el-button class="filter-item" type="primary" icon="el-icon-search" @click="getList">{{ $t('table.search') }}</el-button>
       <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">{{ $t('table.add') }}</el-button>
     </div>
@@ -96,7 +96,7 @@ export default {
       listQuery: {
         page: 1,
         limit: 20,
-        andUserNameEqualTo: undefined,
+        search: undefined,
         sort: '+addTime'
       },
       createUserFormVisible: false,
@@ -133,11 +133,7 @@ export default {
     getList() {
       if (!this.listLoading) {
         this.listLoading = true
-        if (this.listQuery.andUserNameEqualTo === '') {
-          this.listQuery.andUserNameEqualTo = undefined
-        }
         getUsers(this.listQuery).then(response => {
-          debugger
           this.listLoading = false
           if (response.success) {
             this.total = response.data.total
