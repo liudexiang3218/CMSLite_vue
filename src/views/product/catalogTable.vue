@@ -115,10 +115,8 @@ export default {
         const t0 = children[index - 1]
         const t1 = children[index]
         t1.sort = t0.sort + 1
-        // 先删除上移的分类
-        children.splice(index, 1)
-        // 加入上移的分类
-        children.splice(index - 1, 0, t1)
+        this.$set(children, index - 1, t1)
+        this.$set(children, index, t0)
       }
     },
     down(node, data) {
