@@ -4,7 +4,7 @@
       <el-form-item label="分类名称" prop="name">
         <el-input v-model="ruleForm.name" maxlength="16" minlength="6"/>
       </el-form-item>
-      <el-form-item label="父级" prop="parentId">
+      <el-form-item :error="parentError" label="父级" prop="parentIds">
         <el-cascader
           :show-all-levels="false"
           v-model="ruleForm.parentIds"
@@ -19,15 +19,16 @@
     </el-form>
     <span v-show="!visible">
       <p class="warn-content">
-        分类 {{ ruleForm.name }}已添加成功 <el-button @click="resetForm()">继续添加</el-button>
+        分类 {{ ruleForm.name }}已修改
       </p>
     </span>
   </div>
 </template>
 <script>
-import { Message } from 'element-ui'
+import { updateCatalog } from '@/api/product'
+import { bisError } from '@/api/util'
 export default {
-  name: 'CatalogAdd',
+  name: 'CatalogEdit',
   props: {
     options: {
       type: Array,
@@ -40,14 +41,42 @@ export default {
       default() {
         return ['0']
       }
+    },
+    id: {
+      type: String,
+      default: '0'
+    },
+    name: {
+      type: String,
+      default: ''
     }
   },
   data() {
     const validateName = (rule, value, callback) => {
+      debugger
       if (value.length < 1) {
         callback(new Error('分类名称不能为空!'))
       } else {
         callback()
+      }
+    }
+    const validateParent = (rule, value, callback) => {
+      debugger
+      if (value) {
+        let er = false
+        value.forEach(element => {
+          if (this.ruleForm.id === element) {
+            er = true
+            return false
+          }
+        })
+        if (er) {
+          callback(new Error('父级不可选择当前分类及所属下级'))
+        } else {
+          callback()
+        }
+      } else {
+        callback(new Error('父级是必填选'))
       }
     }
     return {
@@ -56,14 +85,17 @@ export default {
         label: 'name'
       },
       formRules: {
-        name: [{ required: true, trigger: 'blur', validator: validateName }]
+        name: [{ required: true, trigger: 'blur', validator: validateName }],
+        parentIds: [{ type: 'array', required: true, trigger: 'change', validator: validateParent }]
       },
       ruleForm: {
-        name: '',
+        id: this.id,
+        name: this.name,
         parentIds: this.parentIds
       },
       loading: false,
-      visible: true
+      visible: true,
+      parentError: ''
     }
   },
   computed: {
@@ -73,28 +105,27 @@ export default {
   },
   methods: {
     submitForm(formName) {
+      this.parentError = ''
       this.$refs[formName].validate((valid) => {
         if (valid) {
           this.loading = true
-          this.$store.dispatch('createCatalog', this.ruleForm).then((response) => {
+          updateCatalog(this.ruleForm).then(response => {
             this.loading = false
             this.visible = false
-            this.$emit('created', response)
-          }).catch((error) => {
-            console.log(error)
+            this.$emit('edited', response)
+          }).catch(error => {
             this.loading = false
             if (!error.sucess && error.errorCode) {
               switch (error.errorCode) {
+                case 30004 :
+                  this.parentError = error.message
+                  break
                 default :
-                  Message({
-                    message: error.message,
-                    type: 'error',
-                    duration: 5 * 1000,
-                    showClose: true
-                  })
+                  bisError(error)
               }
+            } else {
+              bisError(error)
             }
-            return false
           })
         } else {
           this.loading = false
@@ -103,6 +134,7 @@ export default {
       })
     },
     resetForm() {
+      this.parentError = ''
       this.$refs.ruleForm.resetFields()
       this.visible = true
       this.loading = false

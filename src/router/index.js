@@ -287,6 +287,13 @@ export const asyncRouterMap = [
     meta: { title: 'manage', icon: 'component' },
     children: [
       {
+        path: 'add',
+        hidden: true,
+        component: () => import('@/views/product/productAdd'),
+        name: 'addproduct',
+        meta: { roles: ['admin'], noCache: true, redirect: 'noredirect' }
+      },
+      {
         path: 'list',
         component: () => import('@/views/product/listTable'),
         name: 'products',

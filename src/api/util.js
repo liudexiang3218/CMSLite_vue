@@ -1,5 +1,5 @@
 import { Message } from 'element-ui'
-
+import request from '@/utils/request'
 export function bisError(error) {
   if (error && !error.success && error.errorCode) {
     if (error.errorCode > 19999) {
@@ -11,5 +11,12 @@ export function bisError(error) {
       })
     }
   }
+}
+export function postData(url, data) {
+  return request({
+    url: url,
+    method: 'post',
+    data
+  })
 }
 

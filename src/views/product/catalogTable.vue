@@ -4,6 +4,7 @@
       <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">{{ $t('table.add') }}</el-button>
     </div>
     <el-tree
+      ref="tree"
       :data="list"
       :props="props"
       :expand-on-click-node="false"
@@ -29,6 +30,12 @@
           </el-button>
           <el-button
             v-show="!data.del"
+            size="mini"
+            @click="() => update(node, data)">
+            编辑
+          </el-button>
+          <el-button
+            v-show="!data.del"
             type="danger"
             size="mini"
             @click="() => remove(node, data)">
@@ -42,15 +49,19 @@
     <el-dialog v-if="createFormVisible" :before-close="closeAdd" visible title="创建">
       <catalog-add :options="list" :parent-ids="parentIds" @created="createdCatalog"/>
     </el-dialog>
+    <el-dialog v-if="editFormVisible" :before-close="closeEdit" visible title="编辑">
+      <catalog-edit :id="editForm.id" :name="editForm.name" :options="list" :parent-ids="parentIds" @edited="createdCatalog"/>
+    </el-dialog>
   </div>
 </template>
 <script>
 import CatalogAdd from '@/views/product/catalogAdd'
-import { getCatalogTree, deleteCatalogs } from '@/api/product'
+import CatalogEdit from '@/views/product/catalogEdit'
+import { getCatalogTree, deleteCatalogs, upCatalog, downCatalog } from '@/api/product'
 import { bisError } from '@/api/util'
 export default {
   name: 'UserTable',
-  components: { CatalogAdd },
+  components: { CatalogAdd, CatalogEdit },
   data() {
     return {
       list: [],
@@ -60,11 +71,11 @@ export default {
         andDelEqualTo: false
       },
       createFormVisible: false,
+      editFormVisible: false,
       editForm:
       {
         id: '0',
-        nick: '',
-        roles: []
+        name: ''
       },
       props: {
         value: 'id',
@@ -76,14 +87,6 @@ export default {
     this.getList()
   },
   methods: {
-    sortCatalog(arr) {
-      arr.sort((a, b) => {
-        return b.sort - a.sort
-      })
-    },
-    sortList() {
-      this.sortCatalog(this.list)
-    },
     getList() {
       if (!this.listLoading) {
         this.listLoading = true
@@ -106,21 +109,9 @@ export default {
       this.createFormVisible = false
       done()
     },
-    up(node, data) {
-      debugger
-      const parent = node.parent
-      const children = parent.data.children || parent.data
-      const index = children.findIndex(d => d.id === data.id)
-      if (index > 0) {
-        const t0 = children[index - 1]
-        const t1 = children[index]
-        t1.sort = t0.sort + 1
-        this.$set(children, index - 1, t1)
-        this.$set(children, index, t0)
-      }
-    },
-    down(node, data) {
-
+    closeEdit(done) {
+      this.editFormVisible = false
+      done()
     },
     append(node, data) {
       let p = node.parent
@@ -133,71 +124,90 @@ export default {
       this.parentIds = op
       this.createFormVisible = true
     },
-    forEachCatalog(catalog, data, cb) {
-      const callCatalog = this.forEachCatalog
-      if (catalog.id === data.parentId) {
-        cb(catalog)
-        return true
-      } else {
-        if (catalog.children) {
-          catalog.children.forEach(function(val, index, arr) {
-            if (callCatalog(val, data, cb)) {
-              return true
-            }
-          })
-        }
+    update(node, data) {
+      debugger
+      let p = node.parent
+      const op = []
+      while (p && p.key) {
+        op.unshift(p.key)
+        p = p.parent
       }
-    },
-    createdCatalog(data) {
-      const callCatalog = this.forEachCatalog
-      if (data.parentId === '0') {
-        this.list.push(data)
-      } else {
-        this.list.forEach(function(val, index, arr) {
-          if (callCatalog(val, data, function(ct) {
-            if (!ct.children) {
-              ct.children = []
-            }
-            ct.children.push(data)
-          })) {
-            return true
-          }
-        })
+      if (op.length === 0) {
+        op.push('0')
       }
-      this.sortList()
+      this.parentIds = op
+      this.editForm.id = data.id
+      this.editForm.name = data.name
+      this.editFormVisible = true
     },
-    remove(node, data) {
-      const arr = []
-      this.getCatalogs(data, arr)
-      const ids = []
-      arr.forEach(element => {
-        ids.push(element.id)
-      })
+    executeUp(data) {
       this.listLoading = true
-      deleteCatalogs(ids).then(response => {
+      upCatalog(data.id).then(response => {
+        this.listLoading = false
+        this.getList()
+      }).catch(error => {
+        this.listLoading = false
+        bisError(error)
+        this.getList()
+      })
+    },
+    up(node, data) {
+      if (data.leftId === '0') {
+        this.$confirm('此操作将会提升分类到上一个层级, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.executeUp(data)
+        })
+      } else {
+        this.executeUp(data)
+      }
+    },
+    executedown(data) {
+      this.listLoading = true
+      downCatalog(data.id).then(response => {
         this.listLoading = false
         if (response.success) {
-          arr.forEach(element => {
-            element.del = true
-          })
-          const parent = node.parent
-          const children = parent.data.children || parent.data
-          const index = children.findIndex(d => d.id === data.id)
-          children.splice(index, 1)
+          this.getList()
         }
       }).catch(error => {
         this.listLoading = false
         bisError(error)
       })
     },
-    getCatalogs(catalog, arr) {
-      const cb = this.getCatalogs
-      arr.push(catalog)
-      if (catalog.children) {
-        catalog.children.forEach(element => {
-          cb(element, arr)
+    down(node, data) {
+      if (data.rightId === '0') {
+        this.$confirm('此操作将会提升分类到上一个层级, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.executedown(data)
         })
+      } else {
+        this.executedown(data)
       }
+    },
+    createdCatalog(data) {
+      this.getList()
+    },
+    remove(node, data) {
+      this.$confirm('请确认是否要执行删除' + data.name + ', 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.listLoading = true
+        deleteCatalogs([data.id]).then(response => {
+          this.listLoading = false
+          this.getList()
+        }).catch(error => {
+          this.listLoading = false
+          bisError(error)
+          this.getList()
+        })
+      })
     }
   }
 }
