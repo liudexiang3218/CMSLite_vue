@@ -9,9 +9,10 @@
         :show-file-list="true"
         :on-remove="handleRemove"
         :on-success="handleSuccess"
+        :on-error="handleError"
         :before-upload="beforeUpload"
+        :action="action"
         class="editor-slide-upload"
-        action="https://httpbin.org/post"
         list-type="picture-card">
         <el-button size="small" type="primary">点击上传</el-button>
       </el-upload>
@@ -23,7 +24,7 @@
 
 <script>
 // import { getToken } from 'api/qiniu'
-
+import { uploadUrl, bisError, bisErrorMsg, fullImageUrl } from '@/api/util'
 export default {
   name: 'EditorSlideUpload',
   props: {
@@ -36,7 +37,8 @@ export default {
     return {
       dialogVisible: false,
       listObj: {},
-      fileList: []
+      fileList: [],
+      action: uploadUrl()
     }
   },
   methods: {
@@ -44,6 +46,7 @@ export default {
       return Object.keys(this.listObj).every(item => this.listObj[item].hasSuccess)
     },
     handleSubmit() {
+      debugger
       const arr = Object.keys(this.listObj).map(v => this.listObj[v])
       if (!this.checkAllSuccess()) {
         this.$message('请等待所有图片上传成功 或 出现了网络问题，请刷新页面重新上传！')
@@ -55,14 +58,26 @@ export default {
       this.dialogVisible = false
     },
     handleSuccess(response, file) {
-      const uid = file.uid
-      const objKeyArr = Object.keys(this.listObj)
-      for (let i = 0, len = objKeyArr.length; i < len; i++) {
-        if (this.listObj[objKeyArr[i]].uid === uid) {
-          this.listObj[objKeyArr[i]].url = response.files.file
-          this.listObj[objKeyArr[i]].hasSuccess = true
-          return
+      if (response.success) {
+        const uid = file.uid
+        const objKeyArr = Object.keys(this.listObj)
+        for (let i = 0, len = objKeyArr.length; i < len; i++) {
+          if (this.listObj[objKeyArr[i]].uid === uid) {
+            this.listObj[objKeyArr[i]].url = fullImageUrl(response.data[0].url)
+            this.listObj[objKeyArr[i]].hasSuccess = true
+            return
+          }
         }
+      } else {
+        bisError(response)
+        this.handleRemove(file)
+      }
+    },
+    handleError(err, file) {
+      debugger
+      if (err) {
+        bisErrorMsg('文件上传失败')
+        this.handleRemove(file)
       }
     },
     handleRemove(file) {

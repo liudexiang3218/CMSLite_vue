@@ -67,7 +67,8 @@ export default {
     user: '用户管理',
     manage: '产品管理',
     products: '产品列表',
-    catalog: '产品分类'
+    catalog: '产品分类',
+    addproduct: '添加产品'
   },
   navbar: {
     logOut: '退出登录',

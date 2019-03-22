@@ -12,11 +12,33 @@ export function bisError(error) {
     }
   }
 }
+export function bisErrorMsg(message) {
+  Message({
+    message: message,
+    type: 'error',
+    duration: 5 * 1000,
+    showClose: true
+  })
+}
+export function bisSuccess(message) {
+  Message({
+    message: message,
+    type: 'success',
+    duration: 5 * 1000,
+    showClose: true
+  })
+}
 export function postData(url, data) {
   return request({
     url: url,
     method: 'post',
     data
   })
+}
+export function uploadUrl() {
+  return process.env.BASE_API + '/upload/image'
+}
+export function fullImageUrl(url) {
+  return process.env.BASE_API + url
 }
 
