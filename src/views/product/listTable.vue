@@ -21,6 +21,7 @@
         width="55px"/>
       <el-table-column
         :index="indexMethod"
+        width="80px"
         type="index"/>
       <el-table-column label="型号" width="150px" sortable="custom" prop="code" align="center">
         <template slot-scope="scope">

@@ -213,11 +213,13 @@ export default {
 }
 </script>
 <style rel="stylesheet/scss" lang="scss">
-.el-tree-custom .el-tree-node{
-
-      padding-top: 8px;
-
+.el-tree-custom .el-tree-node__content{
+   padding-top: 8px;
+padding-bottom: 8px;
+ border-bottom: 1px solid #dcdfe6;
+ height: 46px;
 }
+
 </style>
 <style>
   .custom-tree-node {
@@ -227,6 +229,6 @@ export default {
     justify-content: space-between;
     font-size: 14px;
     padding-right: 8px;
-    border-bottom: 1px solid #dcdfe6;
+
   }
 </style>
