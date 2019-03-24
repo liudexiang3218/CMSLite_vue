@@ -68,7 +68,10 @@ export default {
     manage: '产品管理',
     products: '产品列表',
     catalog: '产品分类',
-    addproduct: '添加产品'
+    addproduct: '添加产品',
+    cms: '网站管理',
+    banners: 'Banner',
+    addbanner: '添加Banner'
   },
   navbar: {
     logOut: '退出登录',

@@ -117,5 +117,25 @@ export const asyncRouterMap = [
       }
     ]
   },
+  {
+    path: '/cms',
+    component: Layout,
+    meta: { title: 'cms', icon: 'component' },
+    children: [
+      {
+        path: 'banner/add',
+        hidden: true,
+        component: () => import('@/views/banner/bannerAdd'),
+        name: 'addbanner',
+        meta: { roles: ['admin'], title: 'addbanner', noCache: true, redirect: 'noredirect' }
+      },
+      {
+        path: 'banner/list',
+        component: () => import('@/views/banner/listTable'),
+        name: 'banners',
+        meta: { roles: ['admin'], title: 'banners', icon: 'list', noCache: true, redirect: 'noredirect' }
+      }
+    ]
+  },
   { path: '*', redirect: '/404', hidden: true }
 ]
