@@ -220,6 +220,14 @@ export default {
   .avatar-uploader .el-upload:hover {
     border-color: #409EFF;
   }
+  .avatar-uploader .el-upload--picture-card{
+    width: 633px;
+    height: 360px;
+  }
+  .avatar-uploader .el-upload-list__item{
+    width: 633px;
+    height: 360px;
+  }
 </style>
 
 <style scoped>
