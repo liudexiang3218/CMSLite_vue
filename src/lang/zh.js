@@ -71,7 +71,9 @@ export default {
     addproduct: '添加产品',
     cms: '网站管理',
     banners: 'Banner',
-    addbanner: '添加Banner'
+    addbanner: '添加Banner',
+    navs: '栏目管理',
+    addnav: '添加栏目'
   },
   navbar: {
     logOut: '退出登录',

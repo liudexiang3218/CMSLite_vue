@@ -13,7 +13,7 @@
                 <el-input v-model="ruleForm.code" maxlength="30"/>
               </el-form-item>
               <el-row>
-                <el-col :span="12" style="text-align:left;"><el-form-item label="产品类别" prop="catalogIds">
+                <el-col :span="12" style="text-align:left;"><el-form-item label="产品分类" prop="catalogIds">
                   <el-cascader
                     :show-all-levels="false"
                     v-model="ruleForm.catalogIds"

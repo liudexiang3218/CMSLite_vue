@@ -86,7 +86,7 @@ export const asyncRouterMap = [
       {
         path: 'user',
         component: () => import('@/views/user/userTable'),
-        name: 'user',
+        name: 'UserTable',
         meta: { roles: ['admin'], title: 'user', icon: 'peoples', noCache: true, redirect: 'noredirect' }
       }
     ]
@@ -100,19 +100,19 @@ export const asyncRouterMap = [
         path: 'add',
         hidden: true,
         component: () => import('@/views/product/productAdd'),
-        name: 'addproduct',
+        name: 'ProductAdd',
         meta: { roles: ['admin'], title: 'addproduct', noCache: true, redirect: 'noredirect' }
       },
       {
         path: 'list',
         component: () => import('@/views/product/listTable'),
-        name: 'products',
+        name: 'ProductTable',
         meta: { roles: ['admin'], title: 'products', icon: 'list', noCache: true, redirect: 'noredirect' }
       },
       {
         path: 'catalog',
         component: () => import('@/views/product/catalogTable'),
-        name: 'catalog',
+        name: 'CatalogTable',
         meta: { roles: ['admin'], title: 'catalog', icon: 'tree', noCache: true, redirect: 'noredirect' }
       }
     ]
@@ -121,19 +121,33 @@ export const asyncRouterMap = [
     path: '/cms',
     component: Layout,
     meta: { title: 'cms', icon: 'component' },
+    alwaysShow: true,
     children: [
       {
         path: 'banner/add',
         hidden: true,
         component: () => import('@/views/banner/bannerAdd'),
-        name: 'addbanner',
+        name: 'BannerAdd',
         meta: { roles: ['admin'], title: 'addbanner', noCache: true, redirect: 'noredirect' }
       },
       {
         path: 'banner/list',
         component: () => import('@/views/banner/listTable'),
-        name: 'banners',
+        name: 'BannerTable',
         meta: { roles: ['admin'], title: 'banners', icon: 'list', noCache: true, redirect: 'noredirect' }
+      },
+      {
+        path: 'nav/add',
+        hidden: true,
+        component: () => import('@/views/nav/navAdd'),
+        name: 'NavAdd',
+        meta: { roles: ['admin'], title: 'addnav', noCache: true, redirect: 'noredirect' }
+      },
+      {
+        path: 'nav/list',
+        component: () => import('@/views/nav/listTable'),
+        name: 'NavTable',
+        meta: { roles: ['admin'], title: 'navs', icon: 'list', noCache: true, redirect: 'noredirect' }
       }
     ]
   },

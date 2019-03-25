@@ -4,7 +4,7 @@
     <sidebar class="sidebar-container"/>
     <div class="main-container">
       <navbar/>
-      <tags-view/>
+      <tags-view ref="tagsview"/>
       <app-main/>
     </div>
   </div>
@@ -16,6 +16,11 @@ import ResizeMixin from './mixin/ResizeHandler'
 
 export default {
   name: 'Layout',
+  provide() {
+    return {
+      layout: this
+    }
+  },
   components: {
     Navbar,
     Sidebar,
@@ -42,6 +47,9 @@ export default {
   methods: {
     handleClickOutside() {
       this.$store.dispatch('closeSideBar', { withoutAnimation: false })
+    },
+    closeSelectedTag(view) {
+      this.$refs.tagsview.closeSelectedTag(view)
     }
   }
 }

@@ -1,57 +1,57 @@
 import request from '@/utils/request'
-export function upBanner(id) {
+export function up(table, id) {
   return request({
-    url: '/banner/up',
+    url: '/' + table + '/up',
     method: 'post',
     params: { id }
   })
 }
-export function downBanner(id) {
+export function down(table, id) {
   return request({
-    url: '/banner/down',
+    url: '/' + table + '/down',
     method: 'post',
     params: { id }
   })
 }
-export function addBanner(data) {
+export function add(table, data) {
   return request({
-    url: '/banner/add',
+    url: '/' + table + '/add',
     method: 'post',
     data
   })
 }
-export function deleteBanners(data) {
+export function deletes(table, data) {
   debugger
   return request({
-    url: '/banner/del',
+    url: '/' + table + '/del',
     method: 'post',
     data
   })
 }
-export function unDeleteBanners(data) {
+export function unDeletes(table, data) {
   return request({
-    url: '/banner/undel',
+    url: '/' + table + '/undel',
     method: 'post',
     data
   })
 }
-export function updateBanner(data) {
+export function update(table, data) {
   return request({
-    url: '/banner/update',
+    url: '/' + table + '/update',
     method: 'post',
     data
   })
 }
-export function getBanners(data) {
+export function gets(table, data) {
   return request({
-    url: '/banner/list',
+    url: '/' + table + '/list',
     method: 'post',
     data
   })
 }
-export function getBanner(id) {
+export function get(table, id) {
   return request({
-    url: '/banner/get',
+    url: '/' + table + '/get',
     method: 'get',
     params: { id: id }
   })

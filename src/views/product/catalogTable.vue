@@ -60,7 +60,7 @@ import CatalogEdit from '@/views/product/catalogEdit'
 import { getCatalogTree, deleteCatalogs, upCatalog, downCatalog } from '@/api/product'
 import { bisError } from '@/api/util'
 export default {
-  name: 'UserTable',
+  name: 'CatalogTable',
   components: { CatalogAdd, CatalogEdit },
   data() {
     return {

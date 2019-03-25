@@ -10,16 +10,33 @@
           <el-form-item label="描述" prop="content">
             <el-input v-model="ruleForm.content" maxlength="100"/>
           </el-form-item>
-          <el-form-item label="超链接" prop="link">
+          <el-form-item label="类型" prop="type" style="text-align:left;">
+            <el-radio-group v-model="ruleForm.type">
+              <el-radio :label="0">超链接</el-radio>
+              <el-radio :label="1">产品分类</el-radio>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item v-show="ruleForm.type===0" label="超链接" prop="link">
             <el-input v-model="ruleForm.link" maxlength="225"/>
           </el-form-item>
+
+          <el-form-item v-show="ruleForm.type===1" label="产品分类" prop="catalogIds" style="text-align:left;">
+            <el-cascader
+              :show-all-levels="false"
+              v-model="ruleForm.catalogIds"
+              :options="catalogOptions"
+              :props="props"
+              placeholder="请选择或者搜索"
+              change-on-select/>
+          </el-form-item>
+
           <el-form-item label="是否隐藏" prop="del" style="text-align:left;">
             <el-switch v-model="ruleForm.del"/>
           </el-form-item>
         </div>
       </div>
-      <div class="block">
-        <el-form-item label="Banner图" prop="imgUrl">
+      <div v-show="ruleForm.type===1" class="block">
+        <el-form-item label="分类背景图" prop="imgUrl">
           <el-upload
             ref="imgUrl"
             :file-list="imgList"
@@ -52,19 +69,33 @@
 </template>
 <script>
 import { add, update, get } from '@/api/cms'
+import { getCatalogTree } from '@/api/product'
 import { bisError, bisSuccess, uploadUrl, fullImageUrl } from '@/api/util'
 import UploadItem from '@/components/Upload/uploadItem'
 export default {
-  name: 'BannerAdd',
+  name: 'NavAdd',
+  inject: ['layout'],
   components: { UploadItem },
   data() {
+    const validateCatalogIds = (rule, value, callback) => {
+      if (this.ruleForm.type === 1 && value.length === 0) {
+        callback(new Error('请选择一个产品分类'))
+      } else {
+        callback()
+      }
+    }
     return {
       mode: 'add',
+      catalogOptions: [],
+      props: {
+        value: 'id',
+        label: 'name'
+      },
       disabled: false,
       listLoading: false,
       formRules: {
         title: [{ required: true, trigger: 'blur', message: '标题必填选，不能为空' }],
-        imgUrl: [{ required: true, trigger: 'blur', message: 'Banner图必填选，不能为空' }]
+        catalogIds: [{ type: 'array', trigger: 'change', validator: validateCatalogIds }]
       },
       ruleForm: {
         id: '',
@@ -72,11 +103,16 @@ export default {
         content: '',
         imgUrl: '',
         link: '',
-        del: false
+        del: false,
+        catalogIds: [],
+        type: 0
       }
     }
   },
   computed: {
+    catalogList() {
+      return this.catalogOptions
+    },
     action() {
       return uploadUrl()
     },
@@ -88,6 +124,7 @@ export default {
     }
   },
   created() {
+    this.getPageProps()
     if (this.$route.query.mode) {
       this.mode = this.$route.query.mode
     }
@@ -99,12 +136,26 @@ export default {
   methods: {
     reload() {
       this.disabled = false
+      this.getPageProps()
       this.resetForm()
+    },
+    getPageProps() {
+      this.listLoading = true
+      getCatalogTree({ andDelEqualTo: false, CatalogNoTop: true }).then(response => {
+        this.listLoading = false
+        if (response.data) {
+          this.catalogOptions = response.data
+        }
+      }).catch(error => {
+        this.listLoading = false
+        this.disabled = true
+        bisError(error)
+      })
     },
     initForm() {
       if (this.ruleForm.id) {
         this.listLoading = true
-        get('banner', this.ruleForm.id).then(response => {
+        get('nav', this.ruleForm.id).then(response => {
           this.listLoading = false
           if (response.success) {
             this.ruleForm = response.data
@@ -147,14 +198,13 @@ export default {
       this.$refs[field].clearFiles()
     },
     beforeUpload(file) {
-      debugger
       const isJPG = file.type === 'image/jpeg' || file.type === 'image/png'
-      const isLt2M = file.size / 1024 < 750
+      const isLt2M = file.size / 1024 < 500
       if (!isJPG) {
         this.$message.error('上传图片只能是 JPG 或者 PNG 格式!')
       }
       if (!isLt2M) {
-        this.$message.error('上传图片大小不能超过 750KB!')
+        this.$message.error('上传图片大小不能超过 500KB!')
       }
       return isJPG && isLt2M
     },
@@ -166,20 +216,24 @@ export default {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           this.listLoading = true
-          modeAction('banner', this.ruleForm).then(response => {
-            this.listLoading = false
-            this.visible = false
-            if (this.mode === 'edit') {
-              this.$emit('modified', response)
-              bisSuccess('banner修改成功！')
+          modeAction('nav', this.ruleForm).then(response => {
+            if (response.success) {
+              this.listLoading = false
+              this.visible = false
+              if (this.mode === 'edit') {
+                this.$emit('modified', response)
+                bisSuccess('修改成功！')
+              } else {
+                this.$emit('created', response)
+                bisSuccess('添加成功！')
+              }
+              if (!copy) {
+                if (this.layout) {
+                  this.layout.closeSelectedTag(this.$route)
+                }
+              }
             } else {
-              this.$emit('created', response)
-              bisSuccess('banner添加成功！')
-            }
-            debugger
-            if (!copy) {
-              document.close()
-              this.$router.go(-1)
+              bisError(response)
             }
           }).catch((error) => {
             console.log(error)
@@ -221,12 +275,12 @@ export default {
     border-color: #409EFF;
   }
   .avatar-uploader .el-upload--picture-card{
-    width: 633px;
-    height: 360px;
+    width: 375px;
+    height: 250px;
   }
   .avatar-uploader .el-upload-list__item{
-    width: 633px;
-    height: 360px;
+    width: 375px;
+    height: 250px;
   }
 </style>
 

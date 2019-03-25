@@ -74,10 +74,10 @@
 <script>
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
 import BannerAdd from '@/views/banner/bannerAdd'
-import { getBanners, deleteBanners, unDeleteBanners, upBanner, downBanner } from '@/api/cms'
+import { gets, deletes, unDeletes, up, down } from '@/api/cms'
 import { bisError } from '@/api/util'
 export default {
-  name: 'UserTable',
+  name: 'BannerTable',
   components: { Pagination, BannerAdd },
   data() {
     return {
@@ -106,7 +106,7 @@ export default {
         if (this.listQuery.andTitleEqualTo === '') {
           this.listQuery.andTitleEqualTo = undefined
         }
-        getBanners(this.listQuery).then(response => {
+        gets('banner', this.listQuery).then(response => {
           this.listLoading = false
           if (response.success) {
             this.total = response.data.total
@@ -134,7 +134,7 @@ export default {
         type: 'warning'
       }).then(() => {
         row.isLoading = true
-        deleteBanners([row.id]).then(response => {
+        deletes('banner', [row.id]).then(response => {
           this.getList()
           if (response.success) {
             row.del = true
@@ -158,7 +158,7 @@ export default {
         type: 'warning'
       }).then(() => {
         row.isLoading = true
-        unDeleteBanners([row.id]).then(response => {
+        unDeletes('banner', [row.id]).then(response => {
           this.getList()
           if (response.success) {
             row.del = false
@@ -198,7 +198,7 @@ export default {
     },
     up(data) {
       this.listLoading = true
-      upBanner(data.id).then(response => {
+      up('banner', data.id).then(response => {
         this.listLoading = false
         this.getList()
       }).catch(error => {
@@ -209,7 +209,7 @@ export default {
     },
     down(data) {
       this.listLoading = true
-      downBanner(data.id).then(response => {
+      down('banner', data.id).then(response => {
         this.listLoading = false
         if (response.success) {
           this.getList()
