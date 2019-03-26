@@ -148,6 +148,19 @@ export const asyncRouterMap = [
         component: () => import('@/views/nav/listTable'),
         name: 'NavTable',
         meta: { roles: ['admin'], title: 'navs', icon: 'list', noCache: true, redirect: 'noredirect' }
+      },
+      {
+        path: 'block/add',
+        hidden: true,
+        component: () => import('@/views/block/blockAdd'),
+        name: 'BlockAdd',
+        meta: { roles: ['admin'], title: 'addblock', noCache: true, redirect: 'noredirect' }
+      },
+      {
+        path: 'block/list',
+        component: () => import('@/views/block/listTable'),
+        name: 'BlockTable',
+        meta: { roles: ['admin'], title: 'blocks', icon: 'list', noCache: true, redirect: 'noredirect' }
       }
     ]
   },

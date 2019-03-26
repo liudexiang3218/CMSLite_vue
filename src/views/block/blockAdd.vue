@@ -4,35 +4,18 @@
       <div class="block">
         <div class="itemcontainer">
           <span class="demonstration">基本属性</span>
-          <el-form-item label="标题" prop="title">
-            <el-input v-model="ruleForm.title" maxlength="30"/>
+          <el-form-item label="名称" prop="name">
+            <el-input v-model="ruleForm.name" maxlength="30"/>
           </el-form-item>
-          <el-form-item label="描述" prop="content">
-            <el-input v-model="ruleForm.content" maxlength="100"/>
-          </el-form-item>
-          <el-form-item label="超链接" prop="link">
-            <el-input v-model="ruleForm.link" maxlength="225"/>
-          </el-form-item>
-          <el-form-item label="是否隐藏" prop="del" style="text-align:left;">
-            <el-switch v-model="ruleForm.del"/>
+          <el-form-item label="描述" prop="description">
+            <el-input v-model="ruleForm.description" maxlength="100"/>
           </el-form-item>
         </div>
       </div>
       <div class="block">
-        <el-form-item label="Banner图" prop="imgUrl">
-          <el-upload
-            :file-list="imgList"
-            :action="action"
-            :show-file-list="false"
-            :on-success="image1OnSuccess"
-            :on-remove="image1OnRemove"
-            :on-error="image1OnError"
-            :before-upload="beforeUpload"
-            class="avatar-uploader"
-            list-type="picture-card">
-            <i v-if="!ruleForm.imgUrl" class="el-icon-plus"/>
-            <upload-item v-if="ruleForm.imgUrl" />
-          </el-upload>
+        <el-form-item prop="content">
+          <span class="demonstration">区块代码</span>
+          <tinymce ref="tinymce" :height="300" v-model="ruleForm.content" menubar="edit insert view format table" />
         </el-form-item>
       </div>
       <el-row>
@@ -51,40 +34,25 @@
 </template>
 <script>
 import { add, update, get } from '@/api/cms'
-import { bisError, bisSuccess, uploadUrl, fullImageUrl } from '@/api/util'
-import UploadItem from '@/components/Upload/uploadItem'
+import { bisError, bisSuccess } from '@/api/util'
 export default {
-  name: 'BannerAdd',
+  name: 'BlockAdd',
   inject: ['layout'],
-  components: { UploadItem },
   data() {
     return {
       mode: 'add',
       disabled: false,
       listLoading: false,
       formRules: {
-        title: [{ required: true, trigger: 'blur', message: '标题必填选，不能为空' }],
-        imgUrl: [{ required: true, trigger: 'blur', message: 'Banner图必填选，不能为空' }]
+        name: [{ required: true, trigger: 'blur', message: '标题是必填选，不能为空' }],
+        content: [{ required: true, trigger: 'blur', message: '区块代码是必填选，不能为空' }]
       },
       ruleForm: {
         id: '',
-        title: '',
+        name: '',
         content: '',
-        imgUrl: '',
-        link: '',
-        del: false
+        description: ''
       }
-    }
-  },
-  computed: {
-    action() {
-      return uploadUrl()
-    },
-    imgList() {
-      if (this.ruleForm.imgUrl) {
-        return [{ url: fullImageUrl(this.ruleForm.imgUrl) }]
-      }
-      return []
     }
   },
   created() {
@@ -104,7 +72,7 @@ export default {
     initForm() {
       if (this.ruleForm.id) {
         this.listLoading = true
-        get('banner', this.ruleForm.id).then(response => {
+        get('block', this.ruleForm.id).then(response => {
           this.listLoading = false
           if (response.success) {
             this.ruleForm = response.data
@@ -119,45 +87,6 @@ export default {
         })
       }
     },
-    image1OnSuccess(response, file, fileList) {
-      this.imageOnSuccess('imgUrl', response, file, fileList)
-    },
-    imageOnSuccess(field, response, file, fileList) {
-      if (response.success) {
-        this.ruleForm[field] = response.data[0].url
-      } else {
-        this.ruleForm[field] = ''
-        this.$refs[field].clearFiles()
-        bisError(response)
-      }
-    },
-    image1OnError(err, file, fileList) {
-      this.imageOnError('imgUrl', err, file, fileList)
-    },
-    imageOnError(field, err, file, fileList) {
-      this.ruleForm[field] = ''
-      this.$refs[field].clearFiles()
-      bisError(err)
-    },
-    image1OnRemove(file, fileList) {
-      this.imageOnRemove('imgUrl', file, fileList)
-    },
-    imageOnRemove(field, file, fileList) {
-      this.ruleForm[field] = ''
-      this.$refs[field].clearFiles()
-    },
-    beforeUpload(file) {
-      debugger
-      const isJPG = file.type === 'image/jpeg' || file.type === 'image/png'
-      const isLt2M = file.size / 1024 < 750
-      if (!isJPG) {
-        this.$message.error('上传图片只能是 JPG 或者 PNG 格式!')
-      }
-      if (!isLt2M) {
-        this.$message.error('上传图片大小不能超过 750KB!')
-      }
-      return isJPG && isLt2M
-    },
     submitForm(formName, copy) {
       let modeAction = add
       if (this.mode === 'edit') {
@@ -166,17 +95,16 @@ export default {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           this.listLoading = true
-          modeAction('banner', this.ruleForm).then(response => {
+          modeAction('block', this.ruleForm).then(response => {
             this.listLoading = false
             this.visible = false
             if (this.mode === 'edit') {
               this.$emit('modified', response)
-              bisSuccess('banner修改成功！')
+              bisSuccess('修改成功！')
             } else {
               this.$emit('created', response)
-              bisSuccess('banner添加成功！')
+              bisSuccess('添加成功！')
             }
-            debugger
             if (!copy) {
               if (this.layout) {
                 this.layout.closeSelectedTag(this.$route)
@@ -203,7 +131,6 @@ export default {
     },
     resetForm() {
       this.$refs.ruleForm.resetFields()
-      this.imageOnRemove('imgUrl')
       this.listLoading = false
       this.initForm()
     }
