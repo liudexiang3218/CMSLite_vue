@@ -88,6 +88,7 @@ export default {
     initTinymce() {
       const _this = this
       window.tinymce.init({
+        content_css: '/static/flag-icon/css/flag-icon.min.css,/static/fontawesome-free/css/all.min.css,/static/font/merriweather-sans.css,/static/font/merriweather.css,/static/css/styles.min.css,/static/css/modern-business.css',
         language: this.language,
         selector: `#${this.tinymceId}`,
         height: this.height,

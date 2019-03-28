@@ -28,6 +28,11 @@
           <span>{{ scope.row.name }}</span>
         </template>
       </el-table-column>
+      <el-table-column label="描述" prop="description" align="center">
+        <template slot-scope="scope">
+          <span>{{ scope.row.description }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="添加时间" width="160px" sortable="custom" prop="addTime" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.addTime | parseTime('{y}-{m}-{d} {h}:{i}:{s}') }}</span>

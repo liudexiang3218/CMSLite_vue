@@ -1,19 +1,34 @@
 <template>
   <div v-loading="listLoading" class="app-container">
+    <div class="selected-container filter-container">
+      <el-tag
+        v-for="tag in selectedTags"
+        :key="tag.id"
+        :disable-transitions="false"
+        closable
+        @close="handleTagClose(tag)">
+        {{ tag.name }}
+      </el-tag><el-button
+        size="mini"
+        type="primary"
+        @click="saveSelected">保存</el-button>
+    </div>
     <div class="filter-container">
       <el-input v-model="listQuery.andCodeEqualTo" placeholder="型号" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter"/>
       <el-button class="filter-item" type="primary" icon="el-icon-search" @click="getList">{{ $t('table.search') }}</el-button>
       <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">{{ $t('table.add') }}</el-button>
     </div>
     <el-table
+      ref="table"
       :data="list"
       :default-sort = "{prop: 'addTime', order: 'descending'}"
       border
       fit
-      highlight-current-row
       style="width: 100%"
       row-key="id"
       stripe
+      @select="handleSelect"
+      @select-all="handleSelectAll"
       @sort-change="sortChange"
     >
       <el-table-column
@@ -94,7 +109,8 @@ export default {
         limit: 20,
         andCodeEqualTo: undefined,
         sort: '+addTime'
-      }
+      },
+      selectedTags: []
     }
   },
   created() {
@@ -121,6 +137,9 @@ export default {
               })
             }
             this.list = response.data.result
+            if (this.list) {
+              this.initSelection()
+            }
           }
         }).catch(error => {
           this.listLoading = false
@@ -208,7 +227,77 @@ export default {
         this.listQuery.sort = '+' + prop
       }
       this.handleFilter()
+    },
+    handleTagClose(tag) {
+      this.selectedTags.splice(this.selectedTags.indexOf(tag), 1)
+      this.$refs.table.toggleRowSelection(tag, false)
+    },
+    handleSelect(selection, row) {
+      debugger
+      var selectedIndex = selection.indexOf(row)
+      var index = this.selectedTags.findIndex(tag => {
+        return tag.id === row.id
+      })
+      if (selectedIndex !== -1) {
+        // 选中
+        if (index === -1) {
+          this.selectedTags.push(row)
+        }
+      } else {
+        // 取消选中
+        if (index !== -1) {
+          this.selectedTags.splice(index, 1)
+        }
+      }
+    },
+    handleSelectAll(selection) {
+      debugger
+      if (selection.length > 0) {
+        // 全选
+        selection.forEach(row => {
+          this.handleSelect(selection, row)
+        })
+      } else {
+        // 取消全选
+        debugger
+        if (this.list) {
+          this.list.forEach(row => {
+            this.handleSelect(selection, row)
+          })
+        }
+      }
+    },
+    initSelection() {
+      // debugger
+      // if (this.selectedTags) {
+      //   this.selectedTags.forEach(tag => {
+      //     this.$nextTick(() => {
+      //       console.log(tag.id)
+      //       this.$refs.table.toggleRowSelection(tag, true)
+      //     })
+      //   })
+      // }
+    },
+    saveSelected() {
+      debugger
+      if (this.selectedTags) {
+        this.selectedTags.forEach(tag => {
+          this.$nextTick(function() {
+            console.log(tag.id)
+            this.$refs.table.toggleRowSelection(tag, true)
+          })
+        })
+      }
     }
   }
 }
 </script>
+<style>
+.selected-container .el-tag {
+    margin-left: 10px;
+}
+.selected-container .el-button {
+    margin-left: 10px;
+}
+</style>
+

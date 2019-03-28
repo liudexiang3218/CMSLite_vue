@@ -75,7 +75,9 @@ export default {
     navs: '栏目管理',
     addnav: '添加栏目',
     blocks: '区块管理',
-    addblock: '添加块'
+    addblock: '添加块',
+    componentproduct: '产品组件',
+    addcomproduct: '添加产品组件'
   },
   navbar: {
     logOut: '退出登录',

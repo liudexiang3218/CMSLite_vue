@@ -33,10 +33,13 @@
   </div>
 </template>
 <script>
+
+import Tinymce from '@/components/Tinymce'
 import { add, update, get } from '@/api/cms'
 import { bisError, bisSuccess } from '@/api/util'
 export default {
   name: 'BlockAdd',
+  components: { Tinymce },
   inject: ['layout'],
   data() {
     return {

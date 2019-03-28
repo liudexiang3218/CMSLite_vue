@@ -49,7 +49,6 @@
             <el-button v-if="!scope.row.del" size="mini" @click="() => down(scope.row)">
               <svg-icon icon-class="down" />
             </el-button>
-
             <el-button
               size="mini"
               @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
@@ -73,12 +72,11 @@
 
 <script>
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
-import BannerAdd from '@/views/banner/bannerAdd'
 import { gets, deletes, unDeletes, up, down } from '@/api/cms'
 import { bisError } from '@/api/util'
 export default {
   name: 'BannerTable',
-  components: { Pagination, BannerAdd },
+  components: { Pagination },
   data() {
     return {
       list: null,

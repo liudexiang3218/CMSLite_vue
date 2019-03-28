@@ -47,7 +47,7 @@
                   :on-remove="image1OnRemove"
                   :on-error="image1OnError"
                   :before-upload="beforeUpload"
-                  class="avatar-uploader"
+                  class="product-uploader"
                   list-type="picture-card">
                   <i v-if="!ruleForm.imgUrl" class="el-icon-plus"><span class="demonstration">主图</span></i>
                   <upload-item v-if="ruleForm.imgUrl" />
@@ -63,7 +63,7 @@
                   :on-remove="image2OnRemove"
                   :on-error="image2OnError"
                   :before-upload="beforeUpload"
-                  class="avatar-uploader"
+                  class="product-uploader"
                   list-type="picture-card">
                   <i v-if="!ruleForm.imgUrlA" class="el-icon-plus"><span class="demonstration">副图1</span></i>
                   <upload-item v-if="ruleForm.imgUrlA" />
@@ -80,7 +80,7 @@
                   :on-remove="image3OnRemove"
                   :on-error="image3OnError"
                   :before-upload="beforeUpload"
-                  class="avatar-uploader"
+                  class="product-uploader"
                   list-type="picture-card">
                   <i v-if="!ruleForm.imgUrlB" class="el-icon-plus"><span class="demonstration">副图2</span></i>
                   <upload-item v-if="ruleForm.imgUrlB" />
@@ -96,7 +96,7 @@
                   :on-remove="image4OnRemove"
                   :on-error="image4OnError"
                   :before-upload="beforeUpload"
-                  class="avatar-uploader"
+                  class="product-uploader"
                   list-type="picture-card">
                   <i v-if="!ruleForm.imgUrlC" class="el-icon-plus"><span class="demonstration">副图3</span></i>
                   <upload-item v-if="ruleForm.imgUrlC" />
@@ -367,14 +367,14 @@ export default {
 }
 </script>
 <style>
-  .avatar-uploader .el-upload {
+  .product-uploader .el-upload {
     border: 1px dashed #d9d9d9;
     border-radius: 6px;
     cursor: pointer;
     position: relative;
     overflow: hidden;
   }
-  .avatar-uploader .el-upload:hover {
+  .product-uploader .el-upload:hover {
     border-color: #409EFF;
   }
 </style>
