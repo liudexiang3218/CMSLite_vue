@@ -118,6 +118,20 @@ export const asyncRouterMap = [
     ]
   },
   {
+    path: '/module',
+    component: Layout,
+    meta: { title: 'module', icon: 'component' },
+    alwaysShow: true,
+    children: [
+      {
+        path: 'message/list',
+        component: () => import('@/views/message/listTable'),
+        name: 'MessageTable',
+        meta: { roles: ['admin'], title: 'messages', icon: 'list', noCache: true, redirect: 'noredirect' }
+      }
+    ]
+  },
+  {
     path: '/cms',
     component: Layout,
     meta: { title: 'cms', icon: 'component' },
