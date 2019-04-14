@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <el-form :label-position="right" :inline="true" label-width="80px">
+    <el-form :inline="true" label-position="right" label-width="80px">
 
       <el-form-item label="名称">
         <span>   {{ message.name }}</span>
@@ -14,7 +14,7 @@
         <span> {{ message.mobile }}</span>
       </el-form-item>
     </el-form>
-    <el-form :label-position="right" :inline="true" label-width="80px">
+    <el-form :inline="true" label-position="right" label-width="80px">
       <el-form-item label="内容">
         <span>{{ message.content }}</span>
       </el-form-item>
