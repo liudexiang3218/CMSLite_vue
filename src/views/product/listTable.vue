@@ -41,7 +41,7 @@
         type="index"/>
       <el-table-column label="图片" align="center" width="150px">
         <template slot-scope="scope">
-          <img v-if="scope.row.imgUrl" :src="fullImageUrl(scope.row.imgUrl+'.300x300.jpg')">
+          <img v-if="scope.row.imgUrl" :src="fullImageUrl(scope.row.imgUrl+'.100x100.jpg')" style="width:100px">
         </template>
       </el-table-column>
       <el-table-column label="型号" width="150px" sortable="custom" prop="code" align="center">
