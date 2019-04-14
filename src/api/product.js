@@ -21,7 +21,6 @@ export function getCatalogTree(data) {
   })
 }
 export function deleteCatalogs(data) {
-  debugger
   return request({
     url: '/catalog/del',
     method: 'post',
@@ -63,7 +62,6 @@ export function addProduct(data) {
   })
 }
 export function deleteProducts(data) {
-  debugger
   return request({
     url: '/product/del',
     method: 'post',

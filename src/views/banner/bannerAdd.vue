@@ -147,7 +147,6 @@ export default {
       this.$refs[field].clearFiles()
     },
     beforeUpload(file) {
-      debugger
       const isJPG = file.type === 'image/jpeg' || file.type === 'image/png'
       const isLt2M = file.size / 1024 < 750
       if (!isJPG) {
@@ -176,7 +175,6 @@ export default {
               this.$emit('created', response)
               bisSuccess('banner添加成功！')
             }
-            debugger
             if (!copy) {
               if (this.layout) {
                 this.layout.closeSelectedTag(this.$route)

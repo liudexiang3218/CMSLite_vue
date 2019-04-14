@@ -107,7 +107,7 @@ export const asyncRouterMap = [
         path: 'list',
         component: () => import('@/views/product/listTable'),
         name: 'ProductTable',
-        meta: { roles: ['admin'], title: 'products', icon: 'list', noCache: true, redirect: 'noredirect' }
+        meta: { roles: ['admin'], title: 'products', icon: 'list', noCache: false, redirect: 'noredirect' }
       },
       {
         path: 'catalog',
@@ -173,7 +173,7 @@ export const asyncRouterMap = [
         path: 'component/product/list',
         component: () => import('@/views/component/product/listTable'),
         name: 'ComProductTable',
-        meta: { roles: ['admin'], title: 'componentproduct', icon: 'list', noCache: true, redirect: 'noredirect' }
+        meta: { roles: ['admin'], title: 'componentproduct', icon: 'list', noCache: false, redirect: 'noredirect' }
       }
     ]
   },

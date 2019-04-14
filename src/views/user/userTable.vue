@@ -137,7 +137,6 @@ export default {
           this.listQuery.andUserNameEqualTo = undefined
         }
         getUsers(this.listQuery).then(response => {
-          debugger
           this.listLoading = false
           if (response.success) {
             this.total = response.data.total
@@ -158,7 +157,6 @@ export default {
       this.createUserFormVisible = true
     },
     handleDelete(index, row) {
-      debugger
       this.$confirm('请确认是否要执行删除' + row.userName + '账号, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',

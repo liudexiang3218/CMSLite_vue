@@ -21,7 +21,6 @@ export function add(table, data) {
   })
 }
 export function deletes(table, data) {
-  debugger
   return request({
     url: '/' + table + '/del',
     method: 'post',
@@ -52,6 +51,13 @@ export function gets(table, data) {
 export function get(table, id) {
   return request({
     url: '/' + table + '/get',
+    method: 'get',
+    params: { id: id }
+  })
+}
+export function getPath(table, id, path) {
+  return request({
+    url: '/' + table + '/' + path,
     method: 'get',
     params: { id: id }
   })

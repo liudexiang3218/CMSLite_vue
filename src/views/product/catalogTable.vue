@@ -125,7 +125,6 @@ export default {
       this.createFormVisible = true
     },
     update(node, data) {
-      debugger
       let p = node.parent
       const op = []
       while (p && p.key) {

@@ -1,6 +1,6 @@
 <template>
   <div v-loading="listLoading" class="app-container">
-    <div class="selected-container filter-container">
+    <div v-if="mode==='select'" class="selected-container filter-container">
       <el-tag
         v-for="tag in selectedTags"
         :key="tag.id"
@@ -14,11 +14,12 @@
         @click="saveSelected">保存</el-button>
     </div>
     <div class="filter-container">
-      <el-input v-model="listQuery.andCodeEqualTo" placeholder="型号" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter"/>
+      <el-input v-model="listQuery.andCodeEqualTo" placeholder="型号" style="width: 200px;" class="filter-item" @keyup.enter.native="handleSearch"/>
       <el-button class="filter-item" type="primary" icon="el-icon-search" @click="getList">{{ $t('table.search') }}</el-button>
-      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">{{ $t('table.add') }}</el-button>
+      <el-button v-if="mode==='list'" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">{{ $t('table.add') }}</el-button>
     </div>
     <el-table
+      v-if="activate"
       ref="table"
       :data="list"
       :default-sort = "{prop: 'addTime', order: 'descending'}"
@@ -38,6 +39,11 @@
         :index="indexMethod"
         width="80px"
         type="index"/>
+      <el-table-column label="图片" align="center" width="150px">
+        <template slot-scope="scope">
+          <img v-if="scope.row.imgUrl" :src="scope.row.imgUrl+'.300x300.jpg'">
+        </template>
+      </el-table-column>
       <el-table-column label="型号" width="150px" sortable="custom" prop="code" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.code }}</span>
@@ -58,14 +64,14 @@
           <span>{{ scope.row.addTime | parseTime('{y}-{m}-{d} {h}:{i}:{s}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.status')" class-name="status-col" width="100">
+      <el-table-column v-if="mode==='list'" :label="$t('table.status')" class-name="status-col" width="100">
         <template slot-scope="scope">
           <el-tag v-if="scope.row.del" type="danger">已删除</el-tag>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.actions')" align="center" width="230" class-name="small-padding fixed-width">
+      <el-table-column v-if="mode==='list'" :label="$t('table.actions')" align="center" width="230" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <div v-loading="scope.row.isLoading">
+          <div v-loading="scope.row.isLoading" >
             <el-button
               size="mini"
               @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
@@ -99,6 +105,22 @@ import { bisError } from '@/api/util'
 export default {
   name: 'ProductTable',
   components: { Pagination, ProductAdd },
+  props: {
+    mode: {
+      type: String,
+      default: 'list'
+    },
+    selected: {
+      type: Array,
+      default: function() {
+        return []
+      }
+    },
+    maxSelected: {
+      type: Number,
+      default: 9
+    }
+  },
   data() {
     return {
       list: null,
@@ -107,18 +129,29 @@ export default {
       listQuery: {
         page: 1,
         limit: 20,
+        andDelEqualTo: this.mode === 'list' ? undefined : false,
         andCodeEqualTo: undefined,
         sort: '+addTime'
       },
-      selectedTags: []
+      selectedTags: this.selected,
+      activate: true
     }
   },
   created() {
     this.getList()
   },
+  activated() {
+    this.activate = true
+  },
+  deactivated() {
+    this.activate = false
+  },
   methods: {
-    handleFilter() {
+    handleSearch() {
       this.listQuery.page = 1
+      this.handleFilter()
+    },
+    handleFilter() {
       this.getList()
     },
     getList() {
@@ -151,7 +184,6 @@ export default {
       this.$router.push('/product/add')
     },
     handleDelete(index, row) {
-      debugger
       this.$confirm('请确认是否要执行删除型号为' + row.code + '的产品, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -228,65 +260,86 @@ export default {
       }
       this.handleFilter()
     },
-    handleTagClose(tag) {
-      this.selectedTags.splice(this.selectedTags.indexOf(tag), 1)
-      this.$refs.table.toggleRowSelection(tag, false)
-    },
-    handleSelect(selection, row) {
-      debugger
-      var selectedIndex = selection.indexOf(row)
-      var index = this.selectedTags.findIndex(tag => {
+    handleTagClose(row) {
+      this.selectedTags.splice(this.selectedTags.indexOf(row), 1)
+
+      var index = this.list.findIndex(tag => {
         return tag.id === row.id
       })
-      if (selectedIndex !== -1) {
+      if (index > -1) {
+        this.$refs.table.toggleRowSelection(this.list[index], false)
+      }
+    },
+    handleSelect(selection, row) {
+      if (this.mode === 'select') {
+        var selectedIndex = selection.indexOf(row)
+        var index = this.selectedTags.findIndex(tag => {
+          return tag.id === row.id
+        })
+        if (selectedIndex !== -1) {
         // 选中
-        if (index === -1) {
-          this.selectedTags.push(row)
-        }
-      } else {
+          if (index === -1) {
+            this.selectedTags.push(row)
+          }
+        } else {
         // 取消选中
-        if (index !== -1) {
-          this.selectedTags.splice(index, 1)
+          if (index !== -1) {
+            this.selectedTags.splice(index, 1)
+          }
         }
       }
     },
     handleSelectAll(selection) {
-      debugger
-      if (selection.length > 0) {
+      if (this.mode === 'select') {
+        if (selection.length > 0) {
         // 全选
-        selection.forEach(row => {
-          this.handleSelect(selection, row)
-        })
-      } else {
-        // 取消全选
-        debugger
-        if (this.list) {
-          this.list.forEach(row => {
+          selection.forEach(row => {
             this.handleSelect(selection, row)
           })
+        } else {
+        // 取消全选
+          if (this.list) {
+            this.list.forEach(row => {
+              this.handleSelect(selection, row)
+            })
+          }
         }
       }
     },
     initSelection() {
-      // debugger
-      // if (this.selectedTags) {
-      //   this.selectedTags.forEach(tag => {
-      //     this.$nextTick(() => {
-      //       console.log(tag.id)
-      //       this.$refs.table.toggleRowSelection(tag, true)
-      //     })
-      //   })
-      // }
+      if (this.mode === 'select') {
+        if (this.selectedTags) {
+          this.selectedTags.forEach(row => {
+            var index = this.list.findIndex(tag => {
+              return tag.id === row.id
+            })
+            if (index > -1) {
+              this.$nextTick(() => {
+                this.$refs.table.toggleRowSelection(this.list[index], true)
+              })
+            }
+          })
+        }
+      }
     },
     saveSelected() {
-      debugger
-      if (this.selectedTags) {
-        this.selectedTags.forEach(tag => {
-          this.$nextTick(function() {
-            console.log(tag.id)
-            this.$refs.table.toggleRowSelection(tag, true)
-          })
+      if (this.selectedTags.length === 0) {
+        this.$message({
+          message: '没有选择任何产品，请先选择产品',
+          type: 'error',
+          duration: 5 * 1000,
+          showClose: true
         })
+      } else
+      if (this.selectedTags.length > this.maxSelected) {
+        this.$message({
+          message: '最多选择' + this.maxSelected + '个产品，请减少选择数量',
+          type: 'error',
+          duration: 5 * 1000,
+          showClose: true
+        })
+      } else {
+        this.$emit('selected', this.selectedTags)
       }
     }
   }

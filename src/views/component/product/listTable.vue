@@ -77,20 +77,29 @@
     <el-dialog v-if="createFormVisible" :before-close="closeFormDialog" visible title="添加产品组件">
       <com-product-add :id="ruleForm.id" :name="ruleForm.name" :mode="ruleForm.mode" @modified="closeFormDialog" @created="closeFormDialog"/>
     </el-dialog>
+
+    <el-dialog v-if="selectedFormVisible" :before-close="closeSelectedFormDialog" visible title="选择产品">
+      <product-table :selected="selectedProducts" mode="select" @selected="saveSelectedFormDialog"/>
+    </el-dialog>
+
   </div>
 </template>
 
 <script>
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
 import ComProductAdd from '@/views/component/product/comProductAdd'
-import { gets, deletes, unDeletes, up, down } from '@/api/cms'
+import ProductTable from '@/views/product/listTable'
+import { gets, deletes, unDeletes, up, down, update, getPath } from '@/api/cms'
 import { bisError } from '@/api/util'
 export default {
   name: 'CompProductTable',
-  components: { Pagination, ComProductAdd },
+  components: { Pagination, ComProductAdd, ProductTable },
   data() {
     return {
       createFormVisible: false,
+      selectedFormVisible: false,
+      selectedId: '',
+      selectedProducts: [],
       list: null,
       total: 0,
       listLoading: false,
@@ -105,7 +114,6 @@ export default {
         name: '',
         mode: 'add'
       }
-
     }
   },
   created() {
@@ -120,6 +128,46 @@ export default {
     handleFilter() {
       this.listQuery.page = 1
       this.getList()
+    },
+    selectProduct(index, row) {
+      this.selectedId = row.id
+      getPath('comproduct', this.selectedId, 'products').then(response => {
+        this.listLoading = false
+        if (response.success) {
+          this.selectedProducts = response.data
+          this.selectedFormVisible = true
+        }
+      }).catch(error => {
+        this.listLoading = false
+        bisError(error)
+      })
+    },
+    closeSelectedFormDialog(done) {
+      this.selectedFormVisible = false
+      done()
+    },
+    saveSelectedFormDialog(data) {
+      var array = []
+      data.forEach(element => {
+        array.push(element.id)
+      })
+      update('comproduct', { id: this.selectedId, productIds: array }).then(response => {
+        this.listLoading = false
+        if (response.success) {
+          this.total = response.data.total
+          if (response.data.result) {
+            response.data.result.forEach(element => {
+              element.isLoading = false
+            })
+          }
+          this.list = response.data.result
+        }
+      }).catch(error => {
+        this.listLoading = false
+        bisError(error)
+      })
+
+      this.selectedFormVisible = false
     },
     getList() {
       if (!this.listLoading) {
@@ -151,7 +199,6 @@ export default {
       this.createFormVisible = true
     },
     handleDelete(index, row) {
-      debugger
       this.$confirm('请确认是否要执行删除, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',

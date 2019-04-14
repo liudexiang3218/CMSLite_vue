@@ -48,7 +48,6 @@ service.interceptors.response.use(
       }
     }
     if (responseData.errorCode !== 10000) {
-      debugger
       // 1开头的errorCode为系统级别错误，统一提示错误信息。其他为应用业务级别错误,业务代码自行处理
       if (responseData.errorCode > 19999) {
         return Promise.reject(responseData)

@@ -16,7 +16,6 @@ export function addUser(data) {
   })
 }
 export function deleteUsers(data) {
-  debugger
   return request({
     url: '/user/del',
     method: 'post',

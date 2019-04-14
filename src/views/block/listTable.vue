@@ -122,7 +122,6 @@ export default {
       this.$router.push('/cms/block/add')
     },
     handleDelete(index, row) {
-      debugger
       this.$confirm('请确认是否要执行删除, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',

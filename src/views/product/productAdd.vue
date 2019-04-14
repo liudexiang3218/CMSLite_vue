@@ -301,7 +301,6 @@ export default {
       this.$refs[field].clearFiles()
     },
     beforeUpload(file) {
-      debugger
       const isJPG = file.type === 'image/jpeg' || file.type === 'image/png'
       const isLt2M = file.size / 1024 < 500
       if (!isJPG) {

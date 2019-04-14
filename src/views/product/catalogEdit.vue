@@ -53,7 +53,6 @@ export default {
   },
   data() {
     const validateName = (rule, value, callback) => {
-      debugger
       if (value.length < 1) {
         callback(new Error('分类名称不能为空!'))
       } else {
@@ -61,7 +60,6 @@ export default {
       }
     }
     const validateParent = (rule, value, callback) => {
-      debugger
       if (value) {
         let er = false
         value.forEach(element => {
