@@ -41,7 +41,7 @@
         type="index"/>
       <el-table-column label="图片" align="center" width="150px">
         <template slot-scope="scope">
-          <img v-if="scope.row.imgUrl" :src="scope.row.imgUrl+'.300x300.jpg'">
+          <img v-if="scope.row.imgUrl" :src="fullImageUrl(scope.row.imgUrl+'.100x100.jpg')" style="width:100px">
         </template>
       </el-table-column>
       <el-table-column label="型号" width="150px" sortable="custom" prop="code" align="center">
@@ -101,7 +101,7 @@
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
 import ProductAdd from '@/views/product/productAdd'
 import { getProducts, deleteProducts, unDeleteProducts } from '@/api/product'
-import { bisError } from '@/api/util'
+import { bisError, fullImageUrl } from '@/api/util'
 export default {
   name: 'ProductTable',
   components: { Pagination, ProductAdd },
@@ -147,6 +147,7 @@ export default {
     this.activate = false
   },
   methods: {
+    fullImageUrl,
     handleSearch() {
       this.listQuery.page = 1
       this.handleFilter()
