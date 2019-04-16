@@ -175,8 +175,16 @@ export default {
     },
     imageSuccessCBK(arr) {
       const _this = this
+      var cname = 'img-fluid'
+      var tm = window.tinymce.get(_this.tinymceId)
+      if (tm.selection) {
+        var node = tm.selection.getNode()
+        if (node && node.nodeName === 'IMG' && node.className) {
+          cname = node.className
+        }
+      }
       arr.forEach(v => {
-        window.tinymce.get(_this.tinymceId).insertContent(`<img class="wscnph" src="${v.url}" >`)
+        tm.insertContent(`<img class="` + cname + `" src="${v.url}" >`)
       })
     }
   }
