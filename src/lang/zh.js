@@ -75,9 +75,8 @@ export default {
     addblock: '添加块',
     componentproduct: '产品组件',
     addcomproduct: '添加产品组件',
-    createArticle: '创建文章',
-    editArticle: '编辑文章',
-    articleList: '文章列表'
+    module: '模块功能',
+    messages: '留言管理'
   },
   navbar: {
     logOut: '退出登录',

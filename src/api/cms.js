@@ -62,4 +62,11 @@ export function getPath(table, id, path) {
     params: { id: id }
   })
 }
+export function status(table, data) {
+  return request({
+    url: '/' + table + '/status',
+    method: 'post',
+    data
+  })
+}
 
