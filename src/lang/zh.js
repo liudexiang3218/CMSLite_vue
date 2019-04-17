@@ -46,9 +46,6 @@ export default {
     customTreeTable: '自定义树表',
     tab: 'Tab',
     form: '表单',
-    createArticle: '创建文章',
-    editArticle: '编辑文章',
-    articleList: '文章列表',
     errorPages: '错误页面',
     page401: '401',
     page404: '404',
@@ -77,7 +74,10 @@ export default {
     blocks: '区块管理',
     addblock: '添加块',
     componentproduct: '产品组件',
-    addcomproduct: '添加产品组件'
+    addcomproduct: '添加产品组件',
+    createArticle: '创建文章',
+    editArticle: '编辑文章',
+    articleList: '文章列表'
   },
   navbar: {
     logOut: '退出登录',
