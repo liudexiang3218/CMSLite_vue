@@ -1,10 +1,9 @@
 <template>
   <div v-loading="listLoading" class="app-container">
     <div class="filter-container">
-      <el-input v-model="listQuery.andNameLike" placeholder="姓名" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter"/>
-      <el-input v-model="listQuery.andEmailLike" placeholder="email" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter"/>
-      <el-input v-model="listQuery.andMobileLike" placeholder="手机" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter"/>
+      <el-input v-model="listQuery.andTitleLike" placeholder="标题" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter"/>
       <el-button class="filter-item" type="primary" icon="el-icon-search" @click="getList">{{ $t('table.search') }}</el-button>
+      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">{{ $t('table.add') }}</el-button>
     </div>
     <el-table
       :data="list"
@@ -16,7 +15,6 @@
       row-key="id"
       stripe
       @sort-change="sortChange"
-      @row-dblclick="rowClick"
     >
       <el-table-column
         type="selection"
@@ -25,24 +23,9 @@
         :index="indexMethod"
         width="80px"
         type="index"/>
-      <el-table-column label="名称" prop="name" align="center">
+      <el-table-column label="标题" prop="title" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.name }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="email" prop="email" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.email }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="手机" prop="mobile" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.mobile }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="内容" prop="content" align="center" show-overflow-tooltip>
-        <template slot-scope="scope">
-          <span>{{ scope.row.content }}</span>
+          <span>{{ scope.row.title }}</span>
         </template>
       </el-table-column>
       <el-table-column label="添加时间" width="160px" sortable="custom" prop="addTime" align="center">
@@ -53,16 +36,14 @@
       <el-table-column :label="$t('table.status')" class-name="status-col" width="100">
         <template slot-scope="scope">
           <el-tag v-if="scope.row.del" type="danger">已删除</el-tag>
-          <el-tag v-if="!scope.row.del && scope.row.status===1" type="success">已完成</el-tag>
         </template>
       </el-table-column>
       <el-table-column :label="$t('table.actions')" align="center" width="320" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <div v-loading="scope.row.isLoading">
             <el-button
-              v-if="scope.row.status===0"
               size="mini"
-              @click="handleStatus(scope.$index, scope.row)">完成</el-button>
+              @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
             <el-button
               v-if="!scope.row.del"
               size="mini"
@@ -78,23 +59,20 @@
       </el-table-column>
     </el-table>
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList"/>
-    <el-dialog :visible.sync="showDetail" :show-close="false" title="留言详情">
-      <message-detail :message="detail"/>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="showDetail = false">关闭</el-button>
-      </span>
+    <el-dialog v-if="showDialog" fullscreen visible title="创建文章" @close="showDialog=false">
+      <article-edit :id="id" @close="showDialog=false" @created="closeDialog" @modified="closeDialog"/>
     </el-dialog>
   </div>
 </template>
 
 <script>
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
-import { gets, deletes, unDeletes, status } from '@/api/cms'
+import { gets, deletes, unDeletes } from '@/api/cms'
 import { bisError } from '@/api/util'
-import MessageDetail from '@/views/message/detail'
+import ArticleEdit from '@/views/article/articleEdit'
 export default {
-  name: 'MessageTable',
-  components: { Pagination, MessageDetail },
+  name: 'ArticleTable',
+  components: { Pagination, ArticleEdit },
   data() {
     return {
       list: null,
@@ -103,18 +81,11 @@ export default {
       listQuery: {
         page: 1,
         limit: 20,
-        andNameLike: undefined,
-        andEmailLike: undefined,
-        andMobileLike: undefined,
+        andTitleLike: undefined,
         sort: '-addTime'
       },
-      showDetail: false,
-      detail: {
-        name: '',
-        email: '',
-        mobile: '',
-        content: ''
-      }
+      showDialog: false,
+      id: '0'
     }
   },
   created() {
@@ -122,22 +93,15 @@ export default {
   },
   methods: {
     handleFilter() {
-      this.listQuery.page = 1
       this.getList()
     },
     getList() {
       if (!this.listLoading) {
         this.listLoading = true
-        if (this.listQuery.andNameLike === '') {
-          this.listQuery.andNameLike = undefined
+        if (this.listQuery.andTtileLike === '') {
+          this.listQuery.andTtileLike = undefined
         }
-        if (this.listQuery.andEmailLike === '') {
-          this.listQuery.andEmailLike = undefined
-        }
-        if (this.listQuery.andMobileLike === '') {
-          this.listQuery.andMobileLike = undefined
-        }
-        gets('message', this.listQuery).then(response => {
+        gets('article', this.listQuery).then(response => {
           this.listLoading = false
           if (response.success) {
             this.total = response.data.total
@@ -161,7 +125,7 @@ export default {
         type: 'warning'
       }).then(() => {
         row.isLoading = true
-        deletes('message', [row.id]).then(response => {
+        deletes('article', [row.id]).then(response => {
           this.getList()
           if (response.success) {
             row.del = true
@@ -185,7 +149,7 @@ export default {
         type: 'warning'
       }).then(() => {
         row.isLoading = true
-        unDeletes('message', [row.id]).then(response => {
+        unDeletes('article', [row.id]).then(response => {
           this.getList()
           if (response.success) {
             row.del = false
@@ -214,26 +178,18 @@ export default {
       }
       this.handleFilter()
     },
-    handleStatus(index, row) {
-      row.isLoading = true
-      status('message', [row.id]).then(response => {
-        this.getList()
-        if (response.success) {
-          this.$message({
-            message: '操作成功',
-            type: 'success',
-            duration: 5 * 1000,
-            showClose: true
-          })
-        }
-      }).catch(error => {
-        bisError(error)
-        this.getList()
-      })
+    handleEdit(index, row) {
+      debugger
+      this.id = row.id
+      this.showDialog = true
     },
-    rowClick(row, column, event) {
-      this.detail = row
-      this.showDetail = true
+    handleCreate() {
+      this.id = '0'
+      this.showDialog = true
+    },
+    closeDialog() {
+      this.showDialog = false
+      this.getList()
     }
   }
 }

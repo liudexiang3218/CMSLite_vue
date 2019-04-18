@@ -97,7 +97,7 @@ export default {
         page: 1,
         limit: 20,
         andUserNameEqualTo: undefined,
-        sort: '+addTime'
+        sort: '-addTime'
       },
       createUserFormVisible: false,
       editUserFormVisible: false,

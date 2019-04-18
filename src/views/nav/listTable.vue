@@ -44,6 +44,11 @@
           <span>{{ scope.row.addTime | parseTime('{y}-{m}-{d} {h}:{i}:{s}') }}</span>
         </template>
       </el-table-column>
+      <el-table-column label="序号" width="60px" prop="sort" align="center">
+        <template slot-scope="scope">
+          <span>{{ scope.row.sort }}</span>
+        </template>
+      </el-table-column>
       <el-table-column :label="$t('table.status')" class-name="status-col" width="100">
         <template slot-scope="scope">
           <el-tag v-if="scope.row.del" type="danger">已隐藏</el-tag>
@@ -104,7 +109,7 @@ export default {
         page: 1,
         limit: 20,
         andTitleEqualTo: undefined,
-        sort: '-sort'
+        sort: '+sort'
       }
     }
   },

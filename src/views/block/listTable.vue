@@ -83,7 +83,7 @@ export default {
         page: 1,
         limit: 20,
         andNameEqualTo: undefined,
-        sort: '+addTime'
+        sort: '-addTime'
       }
     }
   },

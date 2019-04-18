@@ -79,7 +79,7 @@ export default {
         page: 1,
         limit: 5,
         type: this.type,
-        sort: '+id'
+        sort: '-id'
       },
       loading: false
     }

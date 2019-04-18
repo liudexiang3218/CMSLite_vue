@@ -86,7 +86,7 @@ export default {
         page: 1,
         limit: 20,
         andTitleEqualTo: undefined,
-        sort: '-sort'
+        sort: '+sort'
       }
     }
   },

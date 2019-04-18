@@ -76,7 +76,8 @@ export default {
     componentproduct: '产品组件',
     addcomproduct: '添加产品组件',
     module: '模块功能',
-    messages: '留言管理'
+    messages: '留言管理',
+    articleList: '文章列表'
   },
   navbar: {
     logOut: '退出登录',

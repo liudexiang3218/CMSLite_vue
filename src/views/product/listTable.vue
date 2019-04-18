@@ -131,7 +131,7 @@ export default {
         limit: 20,
         andDelEqualTo: this.mode === 'list' ? undefined : false,
         andCodeEqualTo: undefined,
-        sort: '+addTime'
+        sort: '-addTime'
       },
       selectedTags: this.selected,
       activate: true

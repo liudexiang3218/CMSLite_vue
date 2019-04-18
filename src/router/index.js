@@ -128,6 +128,12 @@ export const asyncRouterMap = [
         component: () => import('@/views/message/listTable'),
         name: 'MessageTable',
         meta: { roles: ['admin'], title: 'messages', icon: 'list', noCache: true, redirect: 'noredirect' }
+      },
+      {
+        path: 'article/list',
+        component: () => import('@/views/article/listTable'),
+        name: 'ArticleTable',
+        meta: { roles: ['admin'], title: 'articleList', icon: 'list', noCache: true, redirect: 'noredirect' }
       }
     ]
   },

@@ -365,19 +365,6 @@ export default {
   }
 }
 </script>
-<style>
-  .product-uploader .el-upload {
-    border: 1px dashed #d9d9d9;
-    border-radius: 6px;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-  }
-  .product-uploader .el-upload:hover {
-    border-color: #409EFF;
-  }
-</style>
-
 <style scoped>
 .container {
 padding: 24px;
@@ -413,10 +400,5 @@ padding:0px 24px 0px 0px;
     width: 100%;
     box-sizing: border-box;
 }
-  .avatar {
-    width: 148px;
-    height: 148px;
-    display: block;
-  }
 </style>
 

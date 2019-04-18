@@ -175,7 +175,7 @@ export default {
         importance: undefined,
         title: undefined,
         type: undefined,
-        sort: '+id'
+        sort: '-id'
       },
       importanceOptions: [1, 2, 3],
       calendarTypeOptions,
