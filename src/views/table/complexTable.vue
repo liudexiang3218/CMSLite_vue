@@ -130,7 +130,7 @@
 <script>
 import { fetchList, fetchPv, createArticle, updateArticle } from '@/api/article'
 import waves from '@/directive/waves' // Waves directive
-import { parseTime } from '@/utils'
+import { parseTime, setSort } from '@/utils'
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
 
 const calendarTypeOptions = [
@@ -241,11 +241,7 @@ export default {
       }
     },
     sortByID(order) {
-      if (order === 'ascending') {
-        this.listQuery.sort = '+id'
-      } else {
-        this.listQuery.sort = '-id'
-      }
+      setSort(this.listQuery, order, 'id')
       this.handleFilter()
     },
     resetTemp() {

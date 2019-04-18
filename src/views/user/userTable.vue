@@ -84,7 +84,7 @@ import Pagination from '@/components/Pagination' // Secondary package based on e
 import UserAdd from '@/views/user/userAdd'
 import UserEdit from '@/views/user/userEdit'
 import { getUsers, deleteUsers, unDeleteUsers } from '@/api/user'
-import { bisError } from '@/api/util'
+import { bisError, setSort } from '@/api/util'
 export default {
   name: 'UserTable',
   components: { Pagination, UserAdd, UserEdit },
@@ -227,11 +227,7 @@ export default {
     },
     sortChange(data) {
       const { prop, order } = data
-      if (order === 'ascending') {
-        this.listQuery.sort = '-' + prop
-      } else {
-        this.listQuery.sort = '+' + prop
-      }
+      setSort(this.listQuery, order, prop)
       this.handleFilter()
     }
   }

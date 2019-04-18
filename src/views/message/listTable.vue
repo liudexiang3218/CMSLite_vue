@@ -90,7 +90,7 @@
 <script>
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
 import { gets, deletes, unDeletes, status } from '@/api/cms'
-import { bisError } from '@/api/util'
+import { bisError, setSort } from '@/api/util'
 import MessageDetail from '@/views/message/detail'
 export default {
   name: 'MessageTable',
@@ -207,11 +207,7 @@ export default {
     },
     sortChange(data) {
       const { prop, order } = data
-      if (order === 'ascending') {
-        this.listQuery.sort = '-' + prop
-      } else {
-        this.listQuery.sort = '+' + prop
-      }
+      setSort(this.listQuery, order, prop)
       this.handleFilter()
     },
     handleStatus(index, row) {

@@ -90,7 +90,7 @@
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
 import NavAdd from '@/views/nav/navAdd'
 import { gets, deletes, unDeletes, up, down } from '@/api/cms'
-import { bisError } from '@/api/util'
+import { bisError, setSort } from '@/api/util'
 export default {
   name: 'NavTable',
   components: { Pagination, NavAdd },
@@ -209,11 +209,7 @@ export default {
     },
     sortChange(data) {
       const { prop, order } = data
-      if (order === 'ascending') {
-        this.listQuery.sort = '-' + prop
-      } else {
-        this.listQuery.sort = '+' + prop
-      }
+      setSort(this.listQuery, order, prop)
       this.handleFilter()
     },
     up(data) {

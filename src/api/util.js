@@ -41,4 +41,11 @@ export function uploadUrl() {
 export function fullImageUrl(url) {
   return process.env.BASE_API + url
 }
+export function setSort(listQuery, order, prop) {
+  if (order === 'ascending') {
+    listQuery.sort = '+' + prop
+  } else {
+    listQuery.sort = '-' + prop
+  }
+}
 

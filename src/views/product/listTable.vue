@@ -101,7 +101,7 @@
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
 import ProductAdd from '@/views/product/productAdd'
 import { getProducts, deleteProducts, unDeleteProducts } from '@/api/product'
-import { bisError, fullImageUrl } from '@/api/util'
+import { bisError, fullImageUrl, setSort } from '@/api/util'
 export default {
   name: 'ProductTable',
   components: { Pagination, ProductAdd },
@@ -254,11 +254,7 @@ export default {
     },
     sortChange(data) {
       const { prop, order } = data
-      if (order === 'ascending') {
-        this.listQuery.sort = '-' + prop
-      } else {
-        this.listQuery.sort = '+' + prop
-      }
+      setSort(this.listQuery, order, prop)
       this.handleFilter()
     },
     handleTagClose(row) {

@@ -70,7 +70,7 @@
 <script>
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
 import { gets, deletes, unDeletes } from '@/api/cms'
-import { bisError } from '@/api/util'
+import { bisError, setSort } from '@/api/util'
 export default {
   name: 'BlockTable',
   components: { Pagination },
@@ -183,11 +183,7 @@ export default {
     },
     sortChange(data) {
       const { prop, order } = data
-      if (order === 'ascending') {
-        this.listQuery.sort = '-' + prop
-      } else {
-        this.listQuery.sort = '+' + prop
-      }
+      setSort(this.listQuery, order, prop)
       this.handleFilter()
     }
   }
