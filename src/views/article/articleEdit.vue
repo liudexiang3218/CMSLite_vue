@@ -1,10 +1,11 @@
 <template>
-  <div v-loading="listLoading" class="container">
+  <div v-loading="listLoading" class="xg-container">
     <el-form ref="ruleForm" :disabled="disabled" :model="ruleForm" :rules="formRules" label-width="100px">
       <el-row>
         <el-col :span="12">
           <div class="leftblock">
             <div class="itemcontainer">
+              <span class="demonstration">基本属性</span>
               <el-form-item label="标题" prop="title">
                 <el-input v-model="ruleForm.title" maxlength="36"/>
               </el-form-item>
@@ -44,10 +45,26 @@
       </div>
       <el-row>
         <el-col :span="24">
+          <div class="block">
+            <span class="demonstration">网页SEO</span>
+            <div class="itemcontainer">
+              <el-form-item label="Keyword" prop="keyword">
+                <el-input v-model="ruleForm.keyword"/>
+              </el-form-item>
+              <el-form-item label="Description" prop="description">
+                <el-input v-model="ruleForm.description" :rows="3" type="textarea"/>
+              </el-form-item>
+            </div>
+          </div>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="24">
           <div style="text-align: right;">
             <el-form-item v-if="!disabled">
-              <el-button :loading="listLoading" type="primary" @click="submitForm('ruleForm',false)">保存</el-button>
-              <el-button type="primary" @click="$emit('close')">关闭</el-button>
+              <el-button :loading="listLoading" type="primary" @click="submitForm('ruleForm',false)">保存并关闭</el-button>
+              <el-button :loading="listLoading" type="primary" @click="submitForm('ruleForm',true)">保存并复制</el-button>
+              <el-button type="primary" @click="$emit('close')">取消</el-button>
               <el-button @click="resetForm()">重置</el-button>
             </el-form-item>
           </div>
@@ -86,7 +103,9 @@ export default {
         title: '',
         spec: '',
         imgUrl: '',
-        content: ''
+        content: '',
+        keyword: '',
+        description: ''
       }
     }
   },
@@ -182,18 +201,22 @@ export default {
           modeAction('article', this.ruleForm).then(response => {
             this.listLoading = false
             this.visible = false
+            var event = 'created'
             if (this.mode === 'edit') {
-              this.$emit('modified', response)
+              event = 'modified'
               bisSuccess('修改成功！')
             } else {
-              this.$emit('created', response)
+              event = 'created'
               bisSuccess('添加成功！')
             }
+            if (copy) {
+              event = event + 'copy'
+            }
+            this.$emit(event, response)
           }).catch((error) => {
-            debugger
             console.log(error)
             this.listLoading = false
-            if (!error.sucess && error.errorCode) {
+            if (!error.success && error.errorCode) {
               switch (error.errorCode) {
                 default :
                   bisError(error)
@@ -220,40 +243,4 @@ export default {
   }
 }
 </script>
-<style scoped>
-.container {
-padding: 24px;
-}
-.container .itemcontainer{
-padding:0px 24px 0px 0px;
-}
-.container .demonstration {
-    display: block;
-    color: #8492a6;
-    font-size: 14px;
-    margin-bottom: 20px;
-}
-.container .block {
-    padding: 20px 0;
-    text-align: center;
-    display: block;
-    width: 100%;
-    box-sizing: border-box;
-}
-.container .leftblock {
-    padding: 20px 0;
-    text-align: center;
-    border-right: 1px solid #eff2f6;
-    display: inline-block;
-    width: 100%;
-    box-sizing: border-box;
-}
-.container .rightblock {
-    padding: 20px 0;
-    text-align: center;
-    display: inline-block;
-    width: 100%;
-    box-sizing: border-box;
-}
-</style>
 

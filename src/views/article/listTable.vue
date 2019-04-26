@@ -175,7 +175,6 @@ export default {
       this.handleFilter()
     },
     handleEdit(index, row) {
-      debugger
       this.id = row.id
       this.showDialog = true
     },

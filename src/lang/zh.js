@@ -77,7 +77,9 @@ export default {
     addcomproduct: '添加产品组件',
     module: '模块功能',
     messages: '留言管理',
-    articleList: '文章列表'
+    articleList: '新闻管理',
+    siteInfo: 'SEO设置',
+    editSiteInfo: '编辑SEO'
   },
   navbar: {
     logOut: '退出登录',

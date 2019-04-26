@@ -1,6 +1,5 @@
 <template>
   <div class="navbar">
-    <hamburger :toggle-click="toggleSideBar" :is-active="sidebar.opened" class="hamburger-container"/>
 
     <breadcrumb class="breadcrumb-container"/>
 
@@ -56,24 +55,18 @@
 <script>
 import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
-import Hamburger from '@/components/Hamburger'
 import ErrorLog from '@/components/ErrorLog'
 import Screenfull from '@/components/Screenfull'
 import SizeSelect from '@/components/SizeSelect'
 import LangSelect from '@/components/LangSelect'
-import ThemePicker from '@/components/ThemePicker'
-import Search from '@/components/HeaderSearch'
 import RePassword from '@/components/User/rePassword'
 export default {
   components: {
     Breadcrumb,
-    Hamburger,
     ErrorLog,
     Screenfull,
     SizeSelect,
     LangSelect,
-    ThemePicker,
-    Search,
     RePassword
   },
   data() {

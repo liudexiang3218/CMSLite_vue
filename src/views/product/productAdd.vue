@@ -112,7 +112,21 @@
         <span class="demonstration">产品详情描述</span>
         <tinymce ref="tinymce" :height="300" v-model="ruleForm.content" menubar="edit insert view format table" />
       </div>
-
+      <el-row>
+        <el-col :span="24">
+          <div class="block">
+            <span class="demonstration">网页SEO</span>
+            <div class="itemcontainer">
+              <el-form-item label="Keyword" prop="keyword">
+                <el-input v-model="ruleForm.keyword"/>
+              </el-form-item>
+              <el-form-item label="Description" prop="description">
+                <el-input v-model="ruleForm.description" :rows="3" type="textarea"/>
+              </el-form-item>
+            </div>
+          </div>
+        </el-col>
+      </el-row>
       <el-row>
         <el-col :span="24">
           <el-form-item v-if="!disabled">
@@ -163,7 +177,9 @@ export default {
         imgUrlB: '',
         imgUrlC: '',
         catalogIds: [],
-        content: ''
+        content: '',
+        keyword: '',
+        description: ''
       }
     }
   },

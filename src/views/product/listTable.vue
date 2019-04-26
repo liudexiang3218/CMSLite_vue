@@ -245,7 +245,8 @@ export default {
       this.$router.push({
         path: '/product/add',
         query: {
-          id: row.id
+          id: row.id,
+          mode: 'add'
         }
       })
     },

@@ -194,6 +194,19 @@ export const asyncRouterMap = [
         component: () => import('@/views/component/product/listTable'),
         name: 'ComProductTable',
         meta: { roles: ['admin'], title: 'componentproduct', icon: 'list', noCache: false, redirect: 'noredirect' }
+      },
+      {
+        path: 'siteinfo/add',
+        hidden: true,
+        component: () => import('@/views/siteinfo/siteInfoEdit'),
+        name: 'SiteInfoEdit',
+        meta: { roles: ['admin'], title: 'editSiteInfo', noCache: true, redirect: 'noredirect' }
+      },
+      {
+        path: 'siteinfo/list',
+        component: () => import('@/views/siteinfo/listTable'),
+        name: 'SiteInfoTable',
+        meta: { roles: ['admin'], title: 'siteInfo', icon: 'list', noCache: false, redirect: 'noredirect' }
       }
     ]
   },

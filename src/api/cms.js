@@ -1,70 +1,42 @@
 import request from '@/utils/request'
 export function up(table, id) {
-  return request({
-    url: '/cms/' + table + '/up',
-    method: 'post',
-    params: { id }
-  })
+  return post(table, 'up', { id })
 }
 export function down(table, id) {
-  return request({
-    url: '/cms/' + table + '/down',
-    method: 'post',
-    params: { id }
-  })
+  return post(table, 'down', { id })
 }
 export function add(table, data) {
-  return request({
-    url: '/cms/' + table + '/add',
-    method: 'post',
-    data
-  })
+  return post(table, 'add', data)
 }
 export function deletes(table, data) {
-  return request({
-    url: '/cms/' + table + '/del',
-    method: 'post',
-    data
-  })
+  return post(table, 'del', data)
 }
 export function unDeletes(table, data) {
-  return request({
-    url: '/cms/' + table + '/undel',
-    method: 'post',
-    data
-  })
+  return post(table, 'undel', data)
 }
 export function update(table, data) {
-  return request({
-    url: '/cms/' + table + '/update',
-    method: 'post',
-    data
-  })
+  return post(table, 'update', data)
+}
+export function status(table, data) {
+  return post(table, 'status', data)
 }
 export function gets(table, data) {
-  return request({
-    url: '/cms/' + table + '/list',
-    method: 'post',
-    data
-  })
+  return post(table, 'list', data)
 }
 export function get(table, id) {
-  return request({
-    url: '/cms/' + table + '/get',
-    method: 'get',
-    params: { id: id }
-  })
+  return fetch(table, 'get', { id: id })
 }
-export function getPath(table, id, path) {
+export function fetch(table, path, data) {
   return request({
     url: '/cms/' + table + '/' + path,
     method: 'get',
-    params: { id: id }
+    params: data
   })
 }
-export function status(table, data) {
+
+export function post(table, path, data) {
   return request({
-    url: '/cms/' + table + '/status',
+    url: '/cms/' + table + '/' + path,
     method: 'post',
     data
   })

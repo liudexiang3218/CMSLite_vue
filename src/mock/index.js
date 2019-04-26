@@ -1,7 +1,4 @@
 import Mock from 'mockjs'
-import loginAPI from './login'
-import remoteSearchAPI from './remoteSearch'
-import transactionAPI from './transaction'
 
 // 修复在使用 MockJS 情况下，设置 withCredentials = true，且未被拦截的跨域请求丢失 Cookies 的问题
 // https://github.com/nuysoft/Mock/issues/300
@@ -19,7 +16,7 @@ Mock.XHR.prototype.send = function() {
 
 // 登录相关
 // Mock.mock(/\/user\/login/, 'post', loginAPI.loginByUsername)
-Mock.mock(/\/login\/logout/, 'post', loginAPI.logout)
+// Mock.mock(/\/login\/logout/, 'post', loginAPI.logout)
 // Mock.mock(/\/user\/userinfo/, 'get', loginAPI.getUserInfo)
 // Mock.mock(/\/user\/changepassword/, 'post', loginAPI.changePassword)
 // 文章相关
@@ -30,9 +27,9 @@ Mock.mock(/\/login\/logout/, 'post', loginAPI.logout)
 // Mock.mock(/\/article\/update/, 'post', articleAPI.updateArticle)
 
 // 搜索相关
-Mock.mock(/\/search\/user/, 'get', remoteSearchAPI.searchUser)
+// Mock.mock(/\/search\/user/, 'get', remoteSearchAPI.searchUser)
 
 // 账单相关
-Mock.mock(/\/transaction\/list/, 'get', transactionAPI.getList)
+// Mock.mock(/\/transaction\/list/, 'get', transactionAPI.getList)
 
 export default Mock
