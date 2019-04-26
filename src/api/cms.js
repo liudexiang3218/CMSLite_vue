@@ -1,9 +1,9 @@
 import request from '@/utils/request'
 export function up(table, id) {
-  return post(table, 'up', { id })
+  return fetch(table, 'up', { id: id })
 }
 export function down(table, id) {
-  return post(table, 'down', { id })
+  return fetch(table, 'down', { id: id })
 }
 export function add(table, data) {
   return post(table, 'add', data)
