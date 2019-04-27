@@ -6,13 +6,13 @@
           <div class="block">
             <div class="itemcontainer">
               <el-form-item label="默认标题" prop="title">
-                <el-input v-model="ruleForm.title"/>
+                <el-input v-model="ruleForm.title" maxlength="200" show-word-limit/>
               </el-form-item>
               <el-form-item label="Keyword" prop="keyword">
-                <el-input v-model="ruleForm.keyword"/>
+                <el-input v-model="ruleForm.keyword" maxlength="300" show-word-limit/>
               </el-form-item>
               <el-form-item label="Description" prop="description">
-                <el-input v-model="ruleForm.description" :rows="3" type="textarea"/>
+                <el-input v-model="ruleForm.description" :rows="3" type="textarea" maxlength="500" show-word-limit/>
               </el-form-item>
             </div>
           </div>
