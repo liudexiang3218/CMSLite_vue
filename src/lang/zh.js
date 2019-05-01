@@ -78,8 +78,8 @@ export default {
     module: '模块功能',
     messages: '留言管理',
     articleList: '新闻管理',
-    siteInfo: 'SEO设置',
-    editSiteInfo: '编辑SEO'
+    siteInfo: '网站设置',
+    editSiteInfo: '编辑网站设置'
   },
   navbar: {
     logOut: '退出登录',

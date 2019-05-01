@@ -7,10 +7,10 @@
             <div class="itemcontainer">
               <span class="demonstration">产品基本属性</span>
               <el-form-item label="名称" prop="name">
-                <el-input v-model="ruleForm.name" maxlength="30"/>
+                <el-input v-model="ruleForm.name" maxlength="30" show-word-limit/>
               </el-form-item>
               <el-form-item label="型号" prop="code">
-                <el-input v-model="ruleForm.code" maxlength="30"/>
+                <el-input v-model="ruleForm.code" maxlength="30" show-word-limit/>
               </el-form-item>
               <el-row>
                 <el-col :span="12" style="text-align:left;"><el-form-item label="产品分类" prop="catalogIds">
@@ -26,7 +26,7 @@
                 </el-col>
                 <el-col :span="12">
                   <el-form-item label="规格" prop="spec">
-                    <el-input v-model="ruleForm.spec" maxlength="30"/>
+                    <el-input v-model="ruleForm.spec" maxlength="30" show-word-limit/>
                   </el-form-item>
                 </el-col>
               </el-row>

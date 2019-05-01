@@ -37,15 +37,15 @@ export function unDeleteCatalogs(data) {
 export function upCatalog(id) {
   return request({
     url: '/catalog/up',
-    method: 'post',
-    params: { id }
+    method: 'get',
+    params: { id: id }
   })
 }
 export function downCatalog(id) {
   return request({
     url: '/catalog/down',
-    method: 'post',
-    params: { id }
+    method: 'get',
+    params: { id: id }
   })
 }
 export function getProps() {

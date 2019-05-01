@@ -5,13 +5,13 @@
         <div class="itemcontainer">
           <span class="demonstration">基本属性</span>
           <el-form-item label="标题" prop="title">
-            <el-input v-model="ruleForm.title" maxlength="30"/>
+            <el-input v-model="ruleForm.title" maxlength="30" show-word-limit/>
           </el-form-item>
           <el-form-item label="描述" prop="content">
-            <el-input v-model="ruleForm.content" maxlength="100"/>
+            <el-input v-model="ruleForm.content" maxlength="200" show-word-limit/>
           </el-form-item>
           <el-form-item label="超链接" prop="link">
-            <el-input v-model="ruleForm.link" maxlength="225"/>
+            <el-input v-model="ruleForm.link" maxlength="225" show-word-limit/>
           </el-form-item>
           <el-form-item label="是否隐藏" prop="del" style="text-align:left;">
             <el-switch v-model="ruleForm.del"/>
