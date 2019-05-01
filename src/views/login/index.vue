@@ -112,7 +112,7 @@ export default {
             this.loading = false
             this.$router.push({ path: this.redirect || '/' })
           }).catch((error) => {
-            this.loginError = error
+            this.loginError = error.message
             this.loading = false
           })
         } else {
