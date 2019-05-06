@@ -19,6 +19,9 @@ service.interceptors.request.use(
     if (store.getters.token) {
       config.headers['XAuthToken'] = store.getters.token
     }
+    if (store.getters.language) {
+      if (store.getters.language === 'zh') { config.headers['lang'] = 'zh_CN' } else if (store.getters.language === 'en') { config.headers['lang'] = 'en_US' }
+    }
     return config
   },
   error => {
