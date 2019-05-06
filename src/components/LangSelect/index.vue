@@ -25,6 +25,8 @@ export default {
         message: 'Switch Language Success',
         type: 'success'
       })
+      this.$store.dispatch('delAllViews')
+      this.$router.push('/')
     }
   }
 }
